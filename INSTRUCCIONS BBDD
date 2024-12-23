@@ -1,0 +1,34 @@
+INSTRUCCIONS PIPOLIANES PER A ACCEDIR A LA BBDD DE SERVIDOR
+
+1. CONFIGURACIÓ DE XARXA REMOTA
+- Per a tenir una BBDD remota, necessitem un servidor, el qual sera un portatil.
+- Per accedir amb aquest portàtil de forma remota, hem de crear una connexió entre els portàtils (com si fos LAN, però es remota). Això es fa utilitzant Tailscale.
+
+- Instalar Tailscale: https://tailscale.com/download/windows
+- Unirse a la xarxa de Tailscale: https://login.tailscale.com/uinv/i35a878e1f41e4336   (si peta lenllaç, mho dieu, que haura expirat)
+
+* Si un cop registrats, us demana que us descarregueu el programa i ja el teniu, aneu a la barra de tareas, a la fletxa desplegable al costat de l'audio, internet i tal, i feu EXIT. Torneu a obrir Tailscale
+(el software), i llavors us apareixera una notificacio de windows. La clickeu, i llavors heu de registrar-vos un altre cop amb el correu o google que heu posat abans, i entrar a la tailnet de "ilovekellykelly12@gmail.com".
+
+
+Un cop dins, ja tindreu acces a la red, i ja podreu accedir a la BBDD.
+
+
+2. ACCÈS A LA BBDD
+- Llavors, per utilitzar la BBDD, necessitem un client de BBDD, per exemple HeidiSQL, o algun de l'estl, feu anar el que us doni la gana. (Potser Heidi per tenir tots el mateix)
+- Per accedir a la BBDD, les dades seran les seguents:
+
+En heidi:
+
+Tipo de Red: MariaDB or MySQL (TCP/IP)
+Libreria: libmysql-8.4.0.dll
+Nombre del host/IP: 100.115.30.79
+Usuario: DAMTASY
+Contraseña: hola123     (es super segura)
+Puerto: 3306
+
+Abans de connectar, la podeu guardar amb el boto de Guardar de baix a l'esquerra, i ja la tindreu sempre, i no caldra tornar a introduir tot. 
+
+
+3. CARRY
+- Ara que ja us ho he carrilejat tot, ja nomes queda que em feu vosaltres tots els preojectes i tant amics (moltes gracies).
