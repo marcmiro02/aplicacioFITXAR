@@ -16,6 +16,7 @@ Un cop dins, ja tindreu acces a la red, i ja podreu accedir a la BBDD.
 
 2. ACCÈS A LA BBDD
 - Llavors, per utilitzar la BBDD, necessitem un client de BBDD, per exemple HeidiSQL, o algun de l'estl, feu anar el que us doni la gana. (Potser Heidi per tenir tots el mateix)
+- Enllaç Heidi: https://www.heidisql.com/download.php
 - Per accedir a la BBDD, les dades seran les seguents:
 
 En heidi:
