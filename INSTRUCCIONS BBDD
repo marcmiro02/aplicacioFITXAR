@@ -5,7 +5,7 @@ INSTRUCCIONS PIPOLIANES PER A ACCEDIR A LA BBDD DE SERVIDOR
 - Per accedir amb aquest portàtil de forma remota, hem de crear una connexió entre els portàtils (com si fos LAN, però es remota). Això es fa utilitzant Tailscale.
 
 - Instalar Tailscale: https://tailscale.com/download/windows
-- Unirse a la xarxa de Tailscale: https://login.tailscale.com/uinv/i35a878e1f41e4336   (si peta lenllaç, mho dieu, que haura expirat)
+- Unirse a la xarxa de Tailscale: https://login.tailscale.com/uinv/i239be64559398c49   (si peta lenllaç, mho dieu, que haura expirat)
 
 * Si un cop registrats, us demana que us descarregueu el programa i ja el teniu, aneu a la barra de tareas, a la fletxa desplegable al costat de l'audio, internet i tal, i feu EXIT. Torneu a obrir Tailscale
 (el software), i llavors us apareixera una notificacio de windows. La clickeu, i llavors heu de registrar-vos un altre cop amb el correu o google que heu posat abans, i entrar a la tailnet de "ilovekellykelly12@gmail.com".
