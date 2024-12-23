@@ -27,6 +27,7 @@ Nombre del host/IP: 100.115.30.79
 Usuario: DAMTASY
 Contraseña: hola123     (es super segura)
 Puerto: 3306
+Base de datos: app_fitxar;laravel_esdeveniments;springboot_competicions
 
 Abans de connectar, la podeu guardar amb el boto de Guardar de baix a l'esquerra, i ja la tindreu sempre, i no caldra tornar a introduir tot. 
 
