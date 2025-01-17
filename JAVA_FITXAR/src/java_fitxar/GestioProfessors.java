@@ -7,6 +7,8 @@ import javax.swing.*;
 import java.awt.*;
 import javax.swing.table.DefaultTableModel;
 import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
 import java_fitxar.DatabaseConnection;
 
 import javax.swing.JFrame;
@@ -45,7 +47,7 @@ public class GestioProfessors extends javax.swing.JFrame {
 
         // Añadir los componentes al JFrame
         add(panelBotones, BorderLayout.NORTH);
-        add(new JScrollPane(taulaProfessors), BorderLayout.CENTER); // Aquí usamos la tabla ya creada
+        //add(new JScrollPane(taulaProfessors), BorderLayout.CENTER); // Aquí usamos la tabla ya creada
 
         // Cargar los datos al iniciar la ventana
         cargarProfessores();
@@ -53,8 +55,8 @@ public class GestioProfessors extends javax.swing.JFrame {
         setVisible(true);
     }
 
-    private void cargarProfessores() {
-String query = "SELECT * FROM usuaris";  // Asegúrate de que 'professores' es el nombre correcto de la tabla
+    public void cargarProfessores() {
+        String query = "SELECT * FROM usuaris";  // Asegúrate de que 'professores' es el nombre correcto de la tabla
         try (Connection connection = DatabaseConnection.getConnection();
              Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
@@ -65,18 +67,18 @@ String query = "SELECT * FROM usuaris";  // Asegúrate de que 'professores' es e
             // Limpiamos la tabla antes de agregar nuevos datos
             model.setRowCount(0);
 
-            // Añadimos los datos de cada fila a la tabla
             while (rs.next()) {
                 int id = rs.getInt("id_usuari");
+                String dni = rs.getString("dni");
                 String nombre = rs.getString("nom");
                 String cognom = rs.getString("cognoms");
                 String email = rs.getString("email");
+
                 
                 
                 String rol = rs.getString("rol");
 
-                // Agregar los datos a la tabla
-                Object[] fila = {id, nombre, cognom, email, rol};
+                Object[] fila = {id, dni,nombre, cognom, email, rol};
                 model.addRow(fila);
             }
         } catch (SQLException e) {
@@ -86,144 +88,170 @@ String query = "SELECT * FROM usuaris";  // Asegúrate de que 'professores' es e
 
     // Método para crear un profesor (puedes abrir un formulario de creación)
     private void crearProfesor() {
-        JOptionPane.showMessageDialog(this, "Formulario para crear un nuevo profesor.");
-        CrearUsuari frame = new CrearUsuari();
-        frame.setVisible(true);
+    CrearUsuari frame = new CrearUsuari(this); // Pasar referencia al marco principal
+    frame.setVisible(true);
+    frame.addWindowListener(new java.awt.event.WindowAdapter() {
+        @Override
+        public void windowClosed(java.awt.event.WindowEvent windowEvent) {
+            cargarProfessores(); // Recargar la tabla después de cerrar el formulario de creación
+        }
+    });
     }
 
     // Método para editar un profesor
 
-private void editarProfesor() {
-    int selectedRow = taulaProfessors.getSelectedRow();
-    if (selectedRow != -1) {
-        // Obtener los datos del profesor seleccionado
-        int idProfesor = (int) taulaProfessors.getValueAt(selectedRow, 0);  // ID del profesor
-        String nombre = (String) taulaProfessors.getValueAt(selectedRow, 1);  // Nombre
-        String apellido = (String) taulaProfessors.getValueAt(selectedRow, 2);  // Apellido
-        String email = (String) taulaProfessors.getValueAt(selectedRow, 3);  // Email
-        String rol = (String) taulaProfessors.getValueAt(selectedRow, 4);  // Rol
-        String contrasenya = ""; // Aquí puede ir el valor de la contraseña si tienes acceso a ella
+    private void editarProfesor() {
+        int selectedRow = taulaProfessors.getSelectedRow();
+        if (selectedRow != -1) {
+            try {
+                // Obtener datos del profesor
+                int idProfesor = (int) taulaProfessors.getValueAt(selectedRow, 0);
+                String nombre = (String) taulaProfessors.getValueAt(selectedRow, 1);
+                String apellido = (String) taulaProfessors.getValueAt(selectedRow, 2);
+                String email = (String) taulaProfessors.getValueAt(selectedRow, 3);
+                int idRolActual = Integer.parseInt(taulaProfessors.getValueAt(selectedRow, 4).toString()); // Corrección aquí
+                String contrasenya = "";
 
-        // Crear el formulario para editar los datos
-        JDialog dialog = new JDialog(this, "Editar Profesor", true);
-        dialog.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(5, 5, 5, 5); // Espaciado entre los componentes
+                // Crear diálogo
+                JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(taulaProfessors), "Editar - " + nombre, true);
+                dialog.setLayout(new GridBagLayout());
+                GridBagConstraints gbc = new GridBagConstraints();
+                gbc.fill = GridBagConstraints.HORIZONTAL;
+                gbc.insets = new Insets(5, 5, 5, 5);
 
-        // Campos del formulario
-        JTextField txtNombre = new JTextField(nombre);
-        JTextField txtApellido = new JTextField(apellido);
-        JTextField txtEmail = new JTextField(email);
-        JTextField txtRol = new JTextField(rol);
-        JPasswordField txtContrasenya = new JPasswordField(contrasenya);
-        JPasswordField txtRepetirContrasenya = new JPasswordField(contrasenya);
+                // Título del formulario
+                JLabel tituloLabel = new JLabel("Editar - " + nombre);
+                tituloLabel.setFont(new Font("Arial", Font.BOLD, 16));
+                gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
+                dialog.add(tituloLabel, gbc);
+                gbc.gridwidth = 1; // Restablecer ancho de columna
 
-        // Etiquetas y campos de texto
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        dialog.add(new JLabel("Nombre:"), gbc);
+                // Campos
+                JTextField txtNombre = new JTextField(nombre);
+                JTextField txtApellido = new JTextField(apellido);
+                JTextField txtEmail = new JTextField(email);
+                JPasswordField txtContrasenya = new JPasswordField(contrasenya);
+                JPasswordField txtRepetirContrasenya = new JPasswordField(contrasenya);
 
-        gbc.gridx = 1;
-        dialog.add(txtNombre, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        dialog.add(new JLabel("Apellido:"), gbc);
-
-        gbc.gridx = 1;
-        dialog.add(txtApellido, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        dialog.add(new JLabel("Email:"), gbc);
-
-        gbc.gridx = 1;
-        dialog.add(txtEmail, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        dialog.add(new JLabel("Rol:"), gbc);
-
-        gbc.gridx = 1;
-        dialog.add(txtRol, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        dialog.add(new JLabel("Contraseña:"), gbc);
-
-        gbc.gridx = 1;
-        dialog.add(txtContrasenya, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        dialog.add(new JLabel("Repetir Contraseña:"), gbc);
-
-        gbc.gridx = 1;
-        dialog.add(txtRepetirContrasenya, gbc);
-
-        // Botones para guardar o cancelar
-        JPanel panelBotones = new JPanel();
-        JButton btnGuardar = new JButton("Guardar");
-        JButton btnCancelar = new JButton("Cancelar");
-        panelBotones.add(btnGuardar);
-        panelBotones.add(btnCancelar);
-
-        gbc.gridx = 1;
-        gbc.gridy = 6;
-        gbc.gridwidth = 2;
-        dialog.add(panelBotones, gbc);
-
-        // Lógica para el botón de guardar
-        btnGuardar.addActionListener(e -> {
-            String nuevoNombre = txtNombre.getText();
-            String nuevoApellido = txtApellido.getText();
-            String nuevoEmail = txtEmail.getText();
-            String nuevoRol = txtRol.getText();
-            String nuevaContrasenya = new String(txtContrasenya.getPassword());
-            String repetirContrasenya = new String(txtRepetirContrasenya.getPassword());
-
-            // Validar contraseñas
-            if (!nuevaContrasenya.equals(repetirContrasenya)) {
-                JOptionPane.showMessageDialog(dialog, "Las contraseñas no coinciden.");
-                return;
-            }
-
-            // Actualizar los datos en la base de datos
-            try (Connection connection = DatabaseConnection.getConnection()) {
-                String updateQuery = "UPDATE usuaris SET nom = ?, cognoms = ?, email = ?, rol = ?, contrasenya = ? WHERE id_usuari = ?";
-                try (PreparedStatement stmt = connection.prepareStatement(updateQuery)) {
-                    stmt.setString(1, nuevoNombre);
-                    stmt.setString(2, nuevoApellido);
-                    stmt.setString(3, nuevoEmail);
-                    stmt.setString(4, nuevoRol);
-                    if (!nuevaContrasenya.isEmpty()) {
-                        stmt.setString(5, nuevaContrasenya); // Solo actualiza la contraseña si ha sido cambiada
-                    } else {
-                        stmt.setString(5, contrasenya); // Si no se modificó la contraseña, se deja la actual
+                JComboBox<String> comboRoles = new JComboBox<>();
+                Map<String, Integer> rolesMap = new HashMap<>();
+                try (Connection connection = DatabaseConnection.getConnection();
+                     Statement stmt = connection.createStatement();
+                     ResultSet rs = stmt.executeQuery("SELECT id_rol, nom_rol FROM rols_usuaris")) {
+                    while (rs.next()) {
+                        int idRol = rs.getInt("id_rol");
+                        String nomRol = rs.getString("nom_rol");
+                        comboRoles.addItem(nomRol);
+                        rolesMap.put(nomRol, idRol);
+                        if (idRol == idRolActual) {
+                            comboRoles.setSelectedItem(nomRol);
+                        }
                     }
-                    stmt.setInt(6, idProfesor);
-                    stmt.executeUpdate();
-                    JOptionPane.showMessageDialog(dialog, "Profesor actualizado correctamente.");
-                    cargarProfessores();  // Recargar la tabla después de la edición
-                    dialog.dispose();  // Cerrar el formulario
                 }
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(dialog, "Error al editar el profesor: " + ex.getMessage());
+
+                // Añadir componentes al diálogo
+                gbc.gridx = 0; gbc.gridy = 1;
+                dialog.add(new JLabel("Nom:"), gbc);
+                gbc.gridx = 1;
+                dialog.add(txtNombre, gbc);
+
+                gbc.gridx = 0; gbc.gridy = 2;
+                dialog.add(new JLabel("Cognoms:"), gbc);
+                gbc.gridx = 1;
+                dialog.add(txtApellido, gbc);
+
+                gbc.gridx = 0; gbc.gridy = 3;
+                dialog.add(new JLabel("Email:"), gbc);
+                gbc.gridx = 1;
+                dialog.add(txtEmail, gbc);
+
+                gbc.gridx = 0; gbc.gridy = 4;
+                dialog.add(new JLabel("Rol:"), gbc);
+                gbc.gridx = 1;
+                dialog.add(comboRoles, gbc);
+
+                gbc.gridx = 0; gbc.gridy = 5;
+                dialog.add(new JLabel("Contrasenya:"), gbc);
+                gbc.gridx = 1;
+                dialog.add(txtContrasenya, gbc);
+
+                gbc.gridx = 0; gbc.gridy = 6;
+                dialog.add(new JLabel("Repetir Contrasenya:"), gbc);
+                gbc.gridx = 1;
+                dialog.add(txtRepetirContrasenya, gbc);
+
+                // Botones
+                JPanel panelBotones = new JPanel();
+                JButton btnGuardar = new JButton("Guardar");
+                JButton btnCancelar = new JButton("Cancelar");
+                panelBotones.add(btnGuardar);
+                panelBotones.add(btnCancelar);
+
+                gbc.gridx = 1; gbc.gridy = 7; gbc.gridwidth = 2;
+                dialog.add(panelBotones, gbc);
+
+                // Acción de guardar
+                btnGuardar.addActionListener(e -> {
+                    try {
+                        String nuevoNombre = txtNombre.getText();
+                        String nuevoApellido = txtApellido.getText();
+                        String nuevoEmail = txtEmail.getText();
+                        String nuevaContrasenya = new String(txtContrasenya.getPassword());
+                        String repetirContrasenya = new String(txtRepetirContrasenya.getPassword());
+
+                        // Validar contraseñas
+                        if (!nuevaContrasenya.equals(repetirContrasenya)) {
+                            JOptionPane.showMessageDialog(dialog, "Les contrasenyes no coincideixen");
+                            return;
+                        }
+
+                        // Obtener ID del rol seleccionado
+                        String rolSeleccionado = (String) comboRoles.getSelectedItem();
+                        int nuevoIdRol = rolesMap.get(rolSeleccionado);
+
+                        // Actualizar los datos en la base de datos
+                        try (Connection connection = DatabaseConnection.getConnection()) {
+                            String updateQuery = "UPDATE usuaris SET nom = ?, cognoms = ?, email = ?, rol = ?, password = ? WHERE id_usuari = ?";
+                            try (PreparedStatement stmt = connection.prepareStatement(updateQuery)) {
+                                stmt.setString(1, nuevoNombre);
+                                stmt.setString(2, nuevoApellido);
+                                stmt.setString(3, nuevoEmail);
+                                stmt.setInt(4, nuevoIdRol);
+                                stmt.setString(5, nuevaContrasenya.isEmpty() ? contrasenya : nuevaContrasenya);
+                                stmt.setInt(6, idProfesor);
+                                stmt.executeUpdate();
+                                JOptionPane.showMessageDialog(dialog, "Professor actualitzat correctament.");
+                                cargarProfessores(); // Recargar la tabla después de la edición
+                                dialog.dispose();
+                            }
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(dialog, "Error al guardar los cambios: " + ex.getMessage());
+                    }
+                });
+
+                // Acción de cancelar
+                btnCancelar.addActionListener(e -> dialog.dispose());
+
+                // Configuración del diálogo
+                dialog.setSize(500, 400);
+                dialog.setLocationRelativeTo(taulaProfessors);
+                dialog.setVisible(true);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error al abrir el formulario: " + ex.getMessage());
             }
-        });
-
-        // Lógica para el botón de cancelar
-        btnCancelar.addActionListener(e -> dialog.dispose());
-
-        // Configurar propiedades del diálogo
-        dialog.setSize(500, 400);  // Tamaño del formulario
-        dialog.setLocationRelativeTo(this);  // Centrar el diálogo en la ventana principal
-        dialog.setVisible(true);
-    } else {
-        JOptionPane.showMessageDialog(this, "Selecciona un profesor para editar.");
+        } else {
+            JOptionPane.showMessageDialog(this, "Selecciona un profesor para editar.");
+        }
     }
-}
+
+
+
+
+
+
 
 
     // Método para eliminar un profesor seleccionado
@@ -269,13 +297,13 @@ private void editarProfesor() {
 
         taulaProfessors.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "ID", "Nom", "Cognoms", "Email", "Rol"
+                "ID", "DNI", "Nom", "Cognoms", "Email", "Rol"
             }
         ));
         jScrollPane1.setViewportView(taulaProfessors);
@@ -294,7 +322,7 @@ private void editarProfesor() {
             .addGroup(layout.createSequentialGroup()
                 .addGap(42, 42, 42)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 636, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(90, Short.MAX_VALUE))
+                .addContainerGap(66, Short.MAX_VALUE))
         );
 
         pack();

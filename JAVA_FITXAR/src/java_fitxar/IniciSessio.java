@@ -23,6 +23,7 @@ public class IniciSessio extends javax.swing.JFrame {
      */
     public IniciSessio() {
         initComponents();
+        setLocationRelativeTo(null);
     }
 
     /**
@@ -34,25 +35,23 @@ public class IniciSessio extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         txtUsuari = new javax.swing.JTextField();
         txtContrasenya = new javax.swing.JTextField();
         bttnLogin = new javax.swing.JButton();
-        BttnRegistre = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        jPanel1.setBackground(new java.awt.Color(153, 153, 153));
+        jPanel1.setForeground(new java.awt.Color(0, 204, 204));
+
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel1.setText("Inici de sessió");
-
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
-        jLabel2.setText("Fitxatges ");
-
-        jLabel3.setText("Nom usuari");
 
         jLabel4.setText("Contrasenya");
 
@@ -69,68 +68,80 @@ public class IniciSessio extends javax.swing.JFrame {
             }
         });
 
-        BttnRegistre.setText("Registrar");
-        BttnRegistre.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BttnRegistreActionPerformed(evt);
-            }
-        });
-
         jButton3.setText("Sortir");
+
+        jLabel3.setText("Nom usuari");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGap(31, 31, 31)
+                .addComponent(jButton3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(bttnLogin)
+                .addGap(38, 38, 38))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(90, 90, 90)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtUsuari, javax.swing.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE)
+                            .addComponent(txtContrasenya)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(71, 71, 71)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 426, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(128, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(31, 31, 31)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(97, 97, 97)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(txtUsuari, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(26, 26, 26)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(txtContrasenya, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 186, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton3)
+                    .addComponent(bttnLogin))
+                .addGap(23, 23, 23))
+        );
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
+        jLabel2.setText("Fitxatges ");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(50, 50, 50)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 426, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 71, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtContrasenya, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtUsuari, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(170, Short.MAX_VALUE))
+                .addGap(62, 62, 62)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(61, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 351, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(122, 122, 122))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jButton3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(BttnRegistre)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(bttnLogin)
-                        .addContainerGap())))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 351, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(106, 106, 106))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(37, 37, 37)
+                .addContainerGap()
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(32, 32, 32)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(txtUsuari, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(26, 26, 26)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(txtContrasenya, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 198, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(bttnLogin)
-                    .addComponent(BttnRegistre)
-                    .addComponent(jButton3))
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(41, Short.MAX_VALUE))
         );
 
         pack();
@@ -146,7 +157,7 @@ public class IniciSessio extends javax.swing.JFrame {
         }else {
             
             if(validarUsuari(usuari, contrasenya)){
-                SuperUserDashboard fg = new SuperUserDashboard();
+                Menu fg = new Menu();
                 fg.setVisible(true);
                 dispose();
                 
@@ -162,10 +173,6 @@ public class IniciSessio extends javax.swing.JFrame {
         
                
     }//GEN-LAST:event_bttnLoginActionPerformed
-
-    private void BttnRegistreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BttnRegistreActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_BttnRegistreActionPerformed
 
     private void txtUsuariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUsuariActionPerformed
        
@@ -205,41 +212,56 @@ public class IniciSessio extends javax.swing.JFrame {
             }
         });
     }
-    private boolean validarUsuari(String usuari, String contrasenya){
-        
-String query = "SELECT nom_usuari, password FROM usuaris WHERE nom_usuari = ? AND password = ?";
-try (Connection connection = DatabaseConnection.getConnection();
-     PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+private boolean validarUsuari(String usuari, String contrasenya) {
+    String query = "SELECT nom_usuari, password, salt, rol FROM usuaris WHERE nom_usuari = ?";
+    try (Connection connection = DatabaseConnection.getConnection();
+         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
-    // Configuramos los parámetros
-    preparedStatement.setString(1, usuari); // Sustituye 'nomUsuari' con la variable correspondiente
-    preparedStatement.setString(2, contrasenya); // Sustituye 'password' con la variable correspondiente
+        preparedStatement.setString(1, usuari); // Sustituye 'nom_usuari' con la variable correspondiente
 
-    // Ejecutamos la consulta
-    try (ResultSet resultSet = preparedStatement.executeQuery()) {
-        if (resultSet.next()) {
-            JOptionPane.showMessageDialog(this, "Resultado de la consulta: " + resultSet.getString("nom_usuari"));
-            return true;
-        } else {
-            JOptionPane.showMessageDialog(this, "No se encontraron resultados.");
-            return false;
+        try (ResultSet resultSet = preparedStatement.executeQuery()) {
+            if (resultSet.next()) {
+                String hashAlmacenado = resultSet.getString("password"); // Hash almacenado
+                String salt = resultSet.getString("salt"); // Sal almacenada
+                int rol = resultSet.getInt("rol"); // Rol del usuario
+
+                // Generar el hash de la contraseña ingresada usando la sal
+                String contrasenyaIngresadaHasheada = PasswordUtils.hashPassword(contrasenya, salt);
+
+                // Comparar los hashes
+                if (hashAlmacenado.equals(contrasenyaIngresadaHasheada)) {
+                    if (rol == 1) {
+                        JOptionPane.showMessageDialog(this, "Benvingut: " + resultSet.getString("nom_usuari"));
+                        return true;
+                    } else {
+                        JOptionPane.showMessageDialog(this, "No tens permissos d'administrador.");
+                        return false;
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Contraseña incorrecta.");
+                    return false;
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Usuari no trobat.");
+                return false;
+            }
         }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error al executar la consulta: " + e.getMessage());
+        return false;
     }
-} catch (SQLException e) {
-    JOptionPane.showMessageDialog(this, "Error al ejecutar la consulta: " + e.getMessage());
-    return false;
 }
-    }
+
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton BttnRegistre;
     private javax.swing.JButton bttnLogin;
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JTextField txtContrasenya;
     private javax.swing.JTextField txtUsuari;
     // End of variables declaration//GEN-END:variables

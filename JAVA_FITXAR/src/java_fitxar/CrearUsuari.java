@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.regex.Pattern;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 /**
@@ -20,8 +21,12 @@ public class CrearUsuari extends javax.swing.JFrame {
     /**
      * Creates new form Registre
      */
-    public CrearUsuari() {
+    public CrearUsuari(JFrame parentFrame) {
         initComponents();
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE); // Solo cierra esta ventana
+        setTitle("Crear Profesor");
+        
+        setLocationRelativeTo(parentFrame); // Centrar la ventana respecto al principal
     }
 
     /**
@@ -48,6 +53,8 @@ public class CrearUsuari extends javax.swing.JFrame {
         txtContrasenya = new javax.swing.JTextField();
         txtContrasenya1 = new javax.swing.JTextField();
         bttnRegistrar = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        txtDNI = new javax.swing.JTextField();
 
         popupMenu1.setLabel("popupMenu1");
 
@@ -75,35 +82,50 @@ public class CrearUsuari extends javax.swing.JFrame {
             }
         });
 
+        jLabel2.setText("DNI");
+
+        txtDNI.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtDNIActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(bttnRegistrar)
+                .addGap(32, 32, 32))
             .addGroup(layout.createSequentialGroup()
                 .addGap(24, 24, 24)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(71, 71, 71)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtNom)
+                            .addComponent(txtContrasenya)
+                            .addComponent(txtContrasenya1, javax.swing.GroupLayout.DEFAULT_SIZE, 179, Short.MAX_VALUE)))
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 502, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(71, 71, 71)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtNom, javax.swing.GroupLayout.DEFAULT_SIZE, 179, Short.MAX_VALUE)
                             .addComponent(txtCognoms)
                             .addComponent(txtEmail)
                             .addComponent(txtNomUsuari)
-                            .addComponent(txtContrasenya)
-                            .addComponent(txtContrasenya1, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 502, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(43, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(bttnRegistrar)
-                .addGap(32, 32, 32))
+                            .addComponent(txtDNI))))
+                .addContainerGap(63, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -128,13 +150,17 @@ public class CrearUsuari extends javax.swing.JFrame {
                     .addComponent(txtNomUsuari, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(txtDNI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
                     .addComponent(txtContrasenya, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel8)
                     .addComponent(txtContrasenya1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 74, Short.MAX_VALUE)
                 .addComponent(bttnRegistrar)
                 .addGap(20, 20, 20))
         );
@@ -143,31 +169,46 @@ public class CrearUsuari extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void bttnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bttnRegistrarActionPerformed
-        String nom = txtNom.getText();
-        String cognoms = txtCognoms.getText();
-        String email = txtEmail.getText();
-        String nomUsuari=txtNomUsuari.getText();
-        String contrasenya = txtContrasenya.getText();
-        String contrasenya1=txtContrasenya1.getText();
-        
-        if (nom.isEmpty() || cognoms.isEmpty() ||email.isEmpty() || nomUsuari.isEmpty() || contrasenya.isEmpty() || contrasenya1.isEmpty() ) {
-            JOptionPane.showMessageDialog(this, "Siusplau, ompli tots els camps.", "Error", JOptionPane.ERROR_MESSAGE);
-            
-        }else {
-            if(contrasenya.equals(contrasenya1)){
-                if (registreUsuari(nom, cognoms, email, nomUsuari, contrasenya)) {
-                    JOptionPane.showMessageDialog(this, "Registro completado y formulario abierto.");
-                } else {
-                    JOptionPane.showMessageDialog(this, "El registro no pudo completarse.");
-                }
-                
-            }else {
-                JOptionPane.showMessageDialog(this, "Les contrasenyes no coincideixen", "Error", JOptionPane.ERROR_MESSAGE);
-                
-            }
-            
-        }
+    String nom = txtNom.getText().trim();
+    String cognoms = txtCognoms.getText().trim();
+    String email = txtEmail.getText().trim();
+    String nomUsuari = txtNomUsuari.getText().trim();
+    String contrasenya = txtContrasenya.getText().trim();
+    String contrasenya1 = txtContrasenya1.getText().trim();
+    String dni = txtDNI.getText().trim(); // Asegúrate de tener un campo para el DNI
+
+    // Validación de campos vacíos
+    if (nom.isEmpty() || cognoms.isEmpty() || email.isEmpty() || nomUsuari.isEmpty() || 
+        contrasenya.isEmpty() || contrasenya1.isEmpty() || dni.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Si us plau, ompli tots els camps.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // Validar que las contraseñas coincidan
+    if (!contrasenya.equals(contrasenya1)) {
+        JOptionPane.showMessageDialog(this, "Les contrasenyes no coincideixen.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // Validar formato del DNI
+    if (dni.length() > 9 || !dni.matches("[A-Za-z0-9]+")) {
+        JOptionPane.showMessageDialog(this, "El DNI no és vàlid. Ha de ser alfanumèric i tenir un màxim de 9 caràcters.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // Intentar registrar al usuario
+    if (registreUsuari(nom, cognoms, email, nomUsuari, contrasenya, dni)) {
+        JOptionPane.showMessageDialog(this, "Registre completat amb èxit.");
+        ((GestioProfessors) getParent()).cargarProfessores(); // Actualizar la tabla en GestioProfessors
+        dispose(); // Cerrar el formulario después del registro exitoso
+    } else {
+        JOptionPane.showMessageDialog(this, "El registre no es va poder completar. Verifiqueu les dades i torneu a intentar-ho.", "Error", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_bttnRegistrarActionPerformed
+
+    private void txtDNIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDNIActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtDNIActionPerformed
 
     /**
      * @param args the command line arguments
@@ -200,28 +241,33 @@ public class CrearUsuari extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new CrearUsuari().setVisible(true);
+                
             }
         });
     }
-    private boolean registreUsuari(String nom, String cognoms, String email, String nomUsuari, String contrasenya) {
+    private boolean registreUsuari(String nom, String cognoms, String email, String nomUsuari, String contrasenya, String dni) {
     // Validar el email
     if (!esEmailValido(email)) {
         JOptionPane.showMessageDialog(this, "El correo electrónico no es válido.", "Error de Validación", JOptionPane.ERROR_MESSAGE);
         return false;
     }
 
-    // Verificar si el nombre de usuario o el correo ya existen
-    String queryVerificar = "SELECT nom_usuari, email FROM usuaris WHERE nom_usuari = ? OR email = ?";
+    // Validar el DNI
+    if (dni.length() > 9 || !dni.matches("[A-Za-z0-9]+")) {
+        JOptionPane.showMessageDialog(this, "El DNI no es válido. Debe ser alfanumérico y tener un máximo de 9 caracteres.", "Error de Validación", JOptionPane.ERROR_MESSAGE);
+        return false;
+    }
+
+    String queryVerificar = "SELECT nom_usuari, email, dni FROM usuaris WHERE nom_usuari = ? OR email = ? OR dni = ?";
     try (Connection connection = DatabaseConnection.getConnection();
          PreparedStatement preparedStatement = connection.prepareStatement(queryVerificar)) {
 
         preparedStatement.setString(1, nomUsuari);
         preparedStatement.setString(2, email);
+        preparedStatement.setString(3, dni);
 
         try (ResultSet resultSet = preparedStatement.executeQuery()) {
             if (resultSet.next()) {
-                // Verificar cuál de los datos ya existe
                 String mensaje = "";
                 if (nomUsuari.equals(resultSet.getString("nom_usuari"))) {
                     mensaje += "El nombre de usuario ya está en uso.\n";
@@ -229,25 +275,37 @@ public class CrearUsuari extends javax.swing.JFrame {
                 if (email.equals(resultSet.getString("email"))) {
                     mensaje += "El correo electrónico ya está registrado.\n";
                 }
+                if (dni.equals(resultSet.getString("dni"))) {
+                    mensaje += "El DNI ya está registrado.\n";
+                }
                 JOptionPane.showMessageDialog(this, mensaje, "Error de Validación", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
         }
 
-        // Insertar el nuevo usuario si no existen conflictos
-        String queryInsertar = "INSERT INTO usuaris (nom, cognoms, email, nom_usuari, password) VALUES (?, ?, ?, ?, ?)";
+        // Generar la sal
+        String salt = PasswordUtils.generarSalt();
+        // Hashear la contraseña con la sal
+        String contrasenyaHasheada = PasswordUtils.hashPassword(contrasenya, salt);
+
+        // Insertar usuario con DNI, sal y contraseña hasheada
+        String queryInsertar = "INSERT INTO usuaris (nom, cognoms, email, nom_usuari, password, salt, dni) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement insertStatement = connection.prepareStatement(queryInsertar)) {
             insertStatement.setString(1, nom);
             insertStatement.setString(2, cognoms);
             insertStatement.setString(3, email);
             insertStatement.setString(4, nomUsuari);
-            insertStatement.setString(5, contrasenya); // Considera almacenar contraseñas cifradas
+            insertStatement.setString(5, contrasenyaHasheada);
+            insertStatement.setString(6, salt); // Guardar la sal
+            insertStatement.setString(7, dni); // Guardar el DNI
             int filasInsertadas = insertStatement.executeUpdate();
             
             if (filasInsertadas > 0) {
                 JOptionPane.showMessageDialog(this, "Usuario registrado con éxito.");
-                // Abrir FitxarGraficament
-                new SuperUserDashboard().setVisible(true);
+                // Asegúrate de que solo se abra el menú si no está ya abierto
+                if (!Menu.isMenuAbierto()) { // Este método verifica si el menú ya está abierto
+                    new Menu().setVisible(true);
+                }
                 return true;
             } else {
                 JOptionPane.showMessageDialog(this, "No se pudo completar el registro.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -259,6 +317,8 @@ public class CrearUsuari extends javax.swing.JFrame {
         return false;
     }
 }
+
+
     
     private boolean esEmailValido(String email) {
     String regex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
@@ -269,6 +329,7 @@ public class CrearUsuari extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bttnRegistrar;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -279,6 +340,7 @@ public class CrearUsuari extends javax.swing.JFrame {
     private javax.swing.JTextField txtCognoms;
     private javax.swing.JTextField txtContrasenya;
     private javax.swing.JTextField txtContrasenya1;
+    private javax.swing.JTextField txtDNI;
     private javax.swing.JTextField txtEmail;
     private javax.swing.JTextField txtNom;
     private javax.swing.JTextField txtNomUsuari;
