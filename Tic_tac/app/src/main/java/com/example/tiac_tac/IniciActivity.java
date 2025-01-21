@@ -4,14 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+
 import androidx.appcompat.app.AppCompatActivity;
 
-public class MainActivity extends AppCompatActivity {
-
+public class IniciActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main); // Enllaça amb el fitxer XML de MainActivity
+        setContentView(R.layout.activity_inici);
     }
 
     // Infla el menú a la part superior de la pantalla
@@ -20,7 +20,6 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu, menu); // Usa el fitxer res/menu/menu.xml
         return true;
     }
-
     // Gestiona les opcions del menú
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
