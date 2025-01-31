@@ -2,8 +2,6 @@ package com.example.tiac_tac;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,6 +16,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+
+import com.example.tiac_tac.models.Usuari; // Importa la classe Usuari
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,34 +47,10 @@ public class LoginActivity extends AppCompatActivity {
                 if (nom.isEmpty() || password.isEmpty()) {
                     Toast.makeText(LoginActivity.this, "Nom d'usuari i contrasenya són necessaris", Toast.LENGTH_SHORT).show();
                 } else {
-                    executarServei("http://192.160.161.234/Tic_tac/usuaris/login.php", nom, password);
+                    executarServei("http://192.160.160.22:8080/Tic_tac/usuaris/login.php", nom, password);
                 }
             }
         });
-    }
-
-    // Infla el menú a la part superior de la pantalla
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu); // Usa el fitxer res/menu/menu.xml
-        return true;
-    }
-
-    // Gestiona les opcions del menú
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.inici) {
-            startActivity(new Intent(this, IniciActivity.class));
-            return true;
-        } else if (item.getItemId() == R.id.actual) {
-            startActivity(new Intent(this, ActualActivity.class));
-            return true;
-        } else if (item.getItemId() == R.id.login) {
-            startActivity(new Intent(this, LoginActivity.class));
-            return true;
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
     }
 
     // Funció per gestionar el servei de login
@@ -83,12 +59,25 @@ public class LoginActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        // Si la resposta del servidor és positiva, redirigeix a la següent activitat
+                        // Si la resposta del servidor és positiva
                         if (response.isEmpty()) {
                             Toast.makeText(LoginActivity.this, "Nom d'usuari o contrasenya incorrectes", Toast.LENGTH_SHORT).show();
                         } else {
-                            startActivity(new Intent(LoginActivity.this, IniciActivity.class));
-                            finish(); // Finalitza l'activitat actual per evitar que l'usuari torni a aquesta pantalla amb el botó enrere
+                            // Exemple de resposta: "Nom Cognoms"
+                            String[] dades = response.trim().split(" "); // Ajusta segons el format de resposta
+                            String nomUsuari = dades[0]; // Nom
+                            String cognoms = dades[1]; // Cognoms
+                            String email = dades[2]; // Email (o el que sigui, segons la resposta)
+                            String nomUsuariDB = dades[3]; // Nom d'usuari
+
+                            // Crear l'objecte Usuari
+                            Usuari usuari = new Usuari(nomUsuari, cognoms, email, nomUsuariDB);
+
+                            // Crear l'Intent per a MainActivity
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            intent.putExtra("usuari", usuari); // Passa l'objecte Usuari
+                            startActivity(intent);
+                            finish(); // Tanca LoginActivity
                         }
                     }
                 },

@@ -43,95 +43,64 @@ public class ActualActivity extends AppCompatActivity {
         resultText = findViewById(R.id.resultText);
 
         // Botó per crear
-        buttonCreate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                executarServei("http://192.160.167.195/Tic_tac/rols_usuaris/insertar_rol.php", "POST");
-            }
-        });
+        buttonCreate.setOnClickListener(v ->
+                executarServei("http://192.160.167.195/Tic_tac/rols_usuaris/insertar_rol.php", "POST")
+        );
 
         // Botó per cercar per id_rol
-        buttonSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                executarServei("http://192.160.167.195/Tic_tac/rols_usuaris/buscar_rol.php", "GET");
-            }
-        });
+        buttonSearch.setOnClickListener(v ->
+                executarServei("http://192.160.167.195/Tic_tac/rols_usuaris/buscar_rol.php", "GET")
+        );
 
         // Botó per actualitzar per id_rol
-        buttonUpdate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                executarServei("rhttp://192.160.167.195/Tic_tac/rols_usuaris/actualitzar_ol.php", "POST");
-            }
-        });
+        buttonUpdate.setOnClickListener(v ->
+                executarServei("http://192.160.167.195/Tic_tac/rols_usuaris/actualitzar_rol.php", "POST")
+        );
 
         // Botó per eliminar per id_rol
-        buttonDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                executarServei("http://192.160.167.195/Tic_tac/rols_usuaris/eliminar_rol.php", "DELETE");
-            }
-        });
+        buttonDelete.setOnClickListener(v ->
+                executarServei("http://192.160.167.195/Tic_tac/rols_usuaris/eliminar_rol.php", "DELETE")
+        );
     }
 
     // Infla el menú a la part superior de la pantalla
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu); // Usa el fitxer res/menu/menu.xml
+        getMenuInflater().inflate(R.menu.bottom_navigation_menu, menu); // Usa el fitxer res/menu/menu.xml
         return true;
     }
+
     // Gestiona les opcions del menú
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.inici) {
-            // Navega a la IniciActivity
-            startActivity(new Intent(this, IniciActivity.class));
-            return true;
-        } else if (item.getItemId() == R.id.actual) {
-            // Navega a la ActualActivity
-            startActivity(new Intent(this, ActualActivity.class));
-            return true;
-        } else if (item.getItemId() == R.id.login) {
-            // Navega a la LoginActivity
-            startActivity(new Intent(this, LoginActivity.class));
-            return true;
-        } else {
-            return super.onOptionsItemSelected(item);
+        Intent intent = null;
+        if (item.getItemId() == R.id.nav_cronometre) {
+            intent = new Intent(this, IniciActivity.class);
+        } else if (item.getItemId() == R.id.nav_settings) {
+            intent = new Intent(this, ActualActivity.class);
+        } else if (item.getItemId() == R.id.nav_profile) {
+            intent = new Intent(this, LoginActivity.class);
         }
 
+        if (intent != null) {
+            startActivity(intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
+
+    // Executa el servei corresponent
     private void executarServei(String URL, String method) {
         StringRequest stringRequest;
 
-        if (method.equals("GET") || method.equals("DELETE")) {
+        if ("GET".equals(method) || "DELETE".equals(method)) {
             stringRequest = new StringRequest(Request.Method.GET, URL + "?id_rol=" + id_rol.getText().toString(),
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            resultText.setText(response); // Mostrar resposta del servidor
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        } else if (method.equals("POST")) {
+                    response -> resultText.setText(response),
+                    error -> Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show());
+        } else if ("POST".equals(method)) {
             stringRequest = new StringRequest(Request.Method.POST, URL,
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            resultText.setText(response); // Mostrar resposta del servidor
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show();
-                        }
-                    }) {
+                    response -> resultText.setText(response),
+                    error -> Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show()) {
                 @Override
                 protected Map<String, String> getParams() throws AuthFailureError {
                     Map<String, String> params = new HashMap<>();
@@ -141,7 +110,8 @@ public class ActualActivity extends AppCompatActivity {
                 }
             };
         } else {
-            return; // No fer res si no és GET, POST ni DELETE
+            Toast.makeText(getApplicationContext(), "Mètode no suportat", Toast.LENGTH_SHORT).show();
+            return;
         }
 
         // Afegir la petició a la cua de sol·licituds
