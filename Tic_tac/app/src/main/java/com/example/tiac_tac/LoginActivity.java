@@ -2,9 +2,12 @@ package com.example.tiac_tac;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,7 +20,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import com.example.tiac_tac.models.Usuari; // Importa la classe Usuari
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +28,9 @@ import java.util.Map;
 public class LoginActivity extends AppCompatActivity {
 
     private EditText loginNom, loginPassword;
-    private Button buttonLogin;
+    private ImageView ivTogglePassword;
+    private boolean isPasswordVisible = false;
+    private static final String TAG = "LoginActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +40,21 @@ public class LoginActivity extends AppCompatActivity {
         // Assignar les vistes
         loginNom = findViewById(R.id.login_nom);
         loginPassword = findViewById(R.id.login_password);
-        buttonLogin = findViewById(R.id.buttonLogin);
+        ivTogglePassword = findViewById(R.id.ivTogglePassword);
+        Button buttonLogin = findViewById(R.id.buttonLogin);
+
+        // Configura el botó d'ull per mostrar/amagar la contrasenya
+        ivTogglePassword.setOnClickListener(view -> {
+            if (isPasswordVisible) {
+                loginPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                ivTogglePassword.setImageResource(R.drawable.ic_eye);
+            } else {
+                loginPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                ivTogglePassword.setImageResource(R.drawable.ic_eye_off);
+            }
+            isPasswordVisible = !isPasswordVisible;
+            loginPassword.setSelection(loginPassword.getText().length());
+        });
 
         // Lògica de login
         buttonLogin.setOnClickListener(new View.OnClickListener() {
@@ -47,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (nom.isEmpty() || password.isEmpty()) {
                     Toast.makeText(LoginActivity.this, "Nom d'usuari i contrasenya són necessaris", Toast.LENGTH_SHORT).show();
                 } else {
-                    executarServei("http://192.160.160.22:8080/Tic_tac/usuaris/login.php", nom, password);
+                    executarServei(Ip.LOGIN_URL, nom, password);
                 }
             }
         });
@@ -59,25 +78,33 @@ public class LoginActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        // Imprimir la resposta del servidor al logcat
+                        Log.d(TAG, "Resposta del servidor: " + response);
+
                         // Si la resposta del servidor és positiva
                         if (response.isEmpty()) {
                             Toast.makeText(LoginActivity.this, "Nom d'usuari o contrasenya incorrectes", Toast.LENGTH_SHORT).show();
                         } else {
-                            // Exemple de resposta: "Nom Cognoms"
-                            String[] dades = response.trim().split(" "); // Ajusta segons el format de resposta
-                            String nomUsuari = dades[0]; // Nom
-                            String cognoms = dades[1]; // Cognoms
-                            String email = dades[2]; // Email (o el que sigui, segons la resposta)
-                            String nomUsuariDB = dades[3]; // Nom d'usuari
+                            try {
+                                // Eliminar el text addicional abans del JSON
+                                String jsonResponseString = response.substring(response.indexOf("{"));
 
-                            // Crear l'objecte Usuari
-                            Usuari usuari = new Usuari(nomUsuari, cognoms, email, nomUsuariDB);
-
-                            // Crear l'Intent per a MainActivity
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            intent.putExtra("usuari", usuari); // Passa l'objecte Usuari
-                            startActivity(intent);
-                            finish(); // Tanca LoginActivity
+                                // Intentar convertir la resposta a JSON
+                                JSONObject jsonResponse = new JSONObject(jsonResponseString);
+                                if (jsonResponse.has("error")) {
+                                    Toast.makeText(LoginActivity.this, jsonResponse.getString("error"), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    // Crear l'Intent per a MainActivity
+                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                    intent.putExtra("user_data", jsonResponse.toString());
+                                    startActivity(intent);
+                                    finish(); // Tanca LoginActivity
+                                }
+                            } catch (Exception e) {
+                                // Imprimir l'error al logcat
+                                Log.e(TAG, "Error en el format de la resposta: " + e.getMessage());
+                                Toast.makeText(LoginActivity.this, "Error en el format de la resposta", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
                 },
@@ -90,7 +117,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                params.put("nom", nom);
+                params.put("nom_usuari", nom);
                 params.put("password", password);
                 return params;
             }

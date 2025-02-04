@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
     <!-- Permís per accedir a Internet -->
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -16,30 +15,33 @@
         android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-
-        <!-- Activitat de Login -->
+        <activity
+            android:name=".Incidencia"
+            android:exported="false" />
+        <activity
+            android:name=".HorariActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Perfil"
+            android:exported="false" />
         <activity
             android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- Activitat Actual -->
+        </activity> <!-- Activitat Actual -->
         <activity
             android:name=".ActualActivity"
-            android:exported="false" />
-
-        <!-- Activitat Inici -->
+            android:exported="false" /> <!-- Activitat Inici -->
         <activity
             android:name=".IniciActivity"
-            android:exported="false" />
-
-        <!-- Activitat principal: MainActivity -->
+            android:exported="false" /> <!-- Activitat principal: MainActivity -->
         <activity
             android:name=".MainActivity"
             android:exported="false" />
     </application>
+
 </manifest>

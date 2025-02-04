@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.tiac_tac"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -38,8 +38,18 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.volley)
 
-
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    // Afegir dependències per a Apache POI
+    implementation("org.apache.poi:poi:5.2.3")
+    implementation("org.apache.poi:poi-ooxml:5.2.3")
+}
+
+// Desactivar el seguiment de l'estat de les tasques de mapatge de fonts de depuració
+tasks.configureEach {
+    if (name.contains("map") && name.contains("SourceSetPaths")) {
+        doNotTrackState("Accessing unreadable inputs or outputs is not supported.")
+    }
 }
