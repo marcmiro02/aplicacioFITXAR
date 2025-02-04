@@ -1,122 +1,120 @@
 package com.example.tiac_tac;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
+import android.os.Handler;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.example.tiac_tac.models.Usuari;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
-    private EditText nom_rol, id_rol;
-    private TextView resultText;
+    private TextView tvNomCognoms, tvCronometre;
+    private View cronometreCircle;
+    private Button btnIniciar, btnParar, btnReiniciar;
+
+    private Handler handler = new Handler();
+    private long startTime = 0L;
+    private boolean isRunning = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Assignar les vistes
-        nom_rol = findViewById(R.id.nom_rol);
-        id_rol = findViewById(R.id.id_rol);
-        Button buttonCreate = findViewById(R.id.buttonCreate);
-        Button buttonSearch = findViewById(R.id.buttonSearch);
-        Button buttonUpdate = findViewById(R.id.buttonUpdate);
-        Button buttonDelete = findViewById(R.id.buttonDelete);
-        resultText = findViewById(R.id.resultText);
+        // Enllaça les vistes
+        tvNomCognoms = findViewById(R.id.tvNomCognoms);
+        tvCronometre = findViewById(R.id.tvCronometre);
+        cronometreCircle = findViewById(R.id.cronometreCircle);
+        btnIniciar = findViewById(R.id.btnIniciar);
+        btnParar = findViewById(R.id.btnParar);
+        btnReiniciar = findViewById(R.id.btnReiniciar);
 
-        // Botó per crear
-        buttonCreate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                executarServei("http://192.160.167.195/Tic_tac/rols_usuaris/insertar_rol.php", "POST");
-            }
-        });
+        // Recupera l'objecte Usuari passat des de LoginActivity
+        Usuari usuari = (Usuari) getIntent().getSerializableExtra("usuari");
 
-        // Botó per cercar per id_rol
-        buttonSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                executarServei("http://192.160.167.195/Tic_tac/rols_usuaris/buscar_rol.php", "GET");
-            }
-        });
+        // Mostra el nom i cognoms si l'usuari no és nul
+        if (usuari != null) {
+            String nomCognoms = usuari.getNom() + " " + usuari.getCognoms();
+            tvNomCognoms.setText(nomCognoms);
+        }
 
-        // Botó per actualitzar per id_rol
-        buttonUpdate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                executarServei("http://192.160.167.195/Tic_tac/rols_usuaris/actualitzar_rol.php", "POST");
-            }
-        });
+        // Configura els botons del cronòmetre
+        btnIniciar.setOnClickListener(view -> iniciarCronometre());
+        btnParar.setOnClickListener(view -> pausarCronometre());
+        btnReiniciar.setOnClickListener(view -> reiniciarCronometre());
 
-        // Botó per eliminar per id_rol
-        buttonDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                executarServei("http://192.160.167.195/Tic_tac/rols_usuaris/eliminar_rol.php", "DELETE");
+        // Configura la barra de navegació inferior
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_cronometre) {
+                // Manté el cronòmetre
+                return true;
+            } else if (id == R.id.nav_settings) {
+                // Mostra configuració
+                showSettings();
+                return true;
+            } else if (id == R.id.nav_profile) {
+                // Mostra el perfil
+                showProfile();
+                return true;
+            } else {
+                return false;
             }
         });
     }
 
-    private void executarServei(String URL, String method) {
-        StringRequest stringRequest;
-
-        if (method.equals("GET") || method.equals("DELETE")) {
-            stringRequest = new StringRequest(Request.Method.GET, URL + "?id_rol=" + id_rol.getText().toString(),
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            resultText.setText(response); // Mostrar resposta del servidor
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        } else if (method.equals("POST")) {
-            stringRequest = new StringRequest(Request.Method.POST, URL,
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            resultText.setText(response); // Mostrar resposta del servidor
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show();
-                        }
-                    }) {
-                @Override
-                protected Map<String, String> getParams() throws AuthFailureError {
-                    Map<String, String> params = new HashMap<>();
-                    params.put("nom_rol", nom_rol.getText().toString());
-                    params.put("id_rol", id_rol.getText().toString());
-                    return params;
-                }
-            };
-        } else {
-            return; // No fer res si no és GET, POST ni DELETE
+    // Mètodes per controlar el cronòmetre
+    private void iniciarCronometre() {
+        if (!isRunning) {
+            startTime = System.currentTimeMillis();
+            handler.postDelayed(updateCronometre, 0);
+            isRunning = true;
+            cronometreCircle.setBackgroundResource(R.drawable.circle_running); // Canvia a verd
         }
+    }
 
-        // Afegir la petició a la cua de sol·licituds
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
+    private void pausarCronometre() {
+        if (isRunning) {
+            handler.removeCallbacks(updateCronometre);
+            isRunning = false;
+            cronometreCircle.setBackgroundResource(R.drawable.circle_paused); // Canvia a taronja
+        }
+    }
+
+    private void reiniciarCronometre() {
+        handler.removeCallbacks(updateCronometre);
+        tvCronometre.setText("00:00:00");
+        isRunning = false;
+        cronometreCircle.setBackgroundResource(R.drawable.circle_stopped); // Canvia a vermell
+    }
+
+    // Runnable per actualitzar el cronòmetre
+    private Runnable updateCronometre = new Runnable() {
+        @Override
+        public void run() {
+            long elapsedTime = System.currentTimeMillis() - startTime;
+            int seconds = (int) (elapsedTime / 1000) % 60;
+            int minutes = (int) (elapsedTime / (1000 * 60)) % 60;
+            int hours = (int) (elapsedTime / (1000 * 60 * 60));
+
+            tvCronometre.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
+            handler.postDelayed(this, 1000);
+        }
+    };
+
+    // Accions de la barra de navegació inferior
+    private void showSettings() {
+        // Implementa accions
+    }
+
+    private void showProfile() {
+        // Implementa accions
     }
 }
