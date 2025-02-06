@@ -1,6 +1,5 @@
 package com.example.tiac_tac;
 
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -112,6 +111,9 @@ public class MainActivity extends AppCompatActivity {
         btnIniciar.setOnClickListener(v -> iniciarCronometre());
         btnPausar.setOnClickListener(v -> pausarCronometre());
         btnParar.setOnClickListener(v -> pararCronometre());
+
+        // Mostrar les hores que li toquen aquell dia
+        mostrarHoresDelDia();
     }
 
     @Override
@@ -127,6 +129,57 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("MainActivity", "Location permissions denied");
                 Toast.makeText(this, "Permís de localització denegat", Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+    private void mostrarHoresDelDia() {
+        try {
+            JSONArray horarisArray = new JSONArray(horarisData);
+            StringBuilder horesDelDia = new StringBuilder();
+
+            // Obtenir el dia de la setmana actual
+            Calendar calendar = Calendar.getInstance();
+            int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+            String diaSetmana = convertirDiaCatala(dayOfWeek);
+
+            // Iterar sobre les dades de l'horari
+            for (int i = 0; i < horarisArray.length(); i++) {
+                JSONObject horari = horarisArray.getJSONObject(i);
+                String dia = horari.getString("dia");
+                String horaInicio = horari.getString("hora_inicio").substring(0, 5); // Format HH:MM
+                String horaFin = horari.getString("hora_fin").substring(0, 5); // Format HH:MM
+
+                // Comparar el dia de la setmana
+                if (dia.equals(diaSetmana)) {
+                    horesDelDia.append(horaInicio).append(" - ").append(horaFin).append("\n");
+                }
+            }
+
+            tvHores.setText(horesDelDia.toString());
+        } catch (Exception e) {
+            Log.e("MainActivity", "Error en el format de les dades de l'horari: " + e.getMessage());
+            Toast.makeText(this, "Error en el format de les dades de l'horari", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private String convertirDiaCatala(int dayOfWeek) {
+        switch (dayOfWeek) {
+            case Calendar.MONDAY:
+                return "DILLUNS";
+            case Calendar.TUESDAY:
+                return "DIMARTS";
+            case Calendar.WEDNESDAY:
+                return "DIMECRES";
+            case Calendar.THURSDAY:
+                return "DIJOUS";
+            case Calendar.FRIDAY:
+                return "DIVENDRES";
+            case Calendar.SATURDAY:
+                return "DISSABTE";
+            case Calendar.SUNDAY:
+                return "DIUMENGE";
+            default:
+                return "";
         }
     }
 
