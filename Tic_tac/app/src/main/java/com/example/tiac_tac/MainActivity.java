@@ -37,11 +37,12 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView tvNomCognoms, tvCronometre, tvHores;
     private View cronometreCircle;
-    private Button btnIniciar, btnParar, btnReiniciar;
+    private Button btnIniciar, btnPausar, btnParar;
 
     private Handler handler = new Handler();
     private long startTime = 0L;
     private boolean isRunning = false;
+    private boolean isPaused = false;
     private String userData;
     private String horarisData;
 
@@ -60,8 +61,8 @@ public class MainActivity extends AppCompatActivity {
         tvHores = findViewById(R.id.tvHores);
         cronometreCircle = findViewById(R.id.cronometreCircle);
         btnIniciar = findViewById(R.id.btnIniciar);
+        btnPausar = findViewById(R.id.btnPausar);
         btnParar = findViewById(R.id.btnParar);
-        btnReiniciar = findViewById(R.id.btnReiniciar);
 
         // Obtenir les dades de l'usuari de l'intent
         Intent intent = getIntent();
@@ -118,8 +119,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Configura els botons del cronòmetre
         btnIniciar.setOnClickListener(v -> iniciarCronometre());
+        btnPausar.setOnClickListener(v -> pausarCronometre());
         btnParar.setOnClickListener(v -> pararCronometre());
-        btnReiniciar.setOnClickListener(v -> reiniciarCronometre());
 
         // Configura el LocationManager
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -149,6 +150,20 @@ public class MainActivity extends AppCompatActivity {
 
         // Mostrar les hores que li toquen aquell dia
         mostrarHoresDelDia();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+                }
+            } else {
+                Toast.makeText(this, "Permís de localització denegat", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private void mostrarHoresDelDia() {
@@ -207,7 +222,21 @@ public class MainActivity extends AppCompatActivity {
             startTime = System.currentTimeMillis();
             handler.postDelayed(updateTimerThread, 0);
             isRunning = true;
+            isPaused = false;
+            cronometreCircle.setBackgroundResource(R.drawable.circle_running);
             guardarFitxatge("entrada");
+        }
+    }
+
+    private void pausarCronometre() {
+        if (isRunning && !isPaused) {
+            handler.removeCallbacks(updateTimerThread);
+            isPaused = true;
+            cronometreCircle.setBackgroundResource(R.drawable.circle_paused);
+        } else if (isRunning && isPaused) {
+            handler.postDelayed(updateTimerThread, 0);
+            isPaused = false;
+            cronometreCircle.setBackgroundResource(R.drawable.circle_running);
         }
     }
 
@@ -215,13 +244,10 @@ public class MainActivity extends AppCompatActivity {
         if (isRunning) {
             handler.removeCallbacks(updateTimerThread);
             isRunning = false;
+            isPaused = false;
+            cronometreCircle.setBackgroundResource(R.drawable.circle_stopped);
             guardarFitxatge("sortida");
         }
-    }
-
-    private void reiniciarCronometre() {
-        pararCronometre();
-        tvCronometre.setText("00:00:00");
     }
 
     private Runnable updateTimerThread = new Runnable() {

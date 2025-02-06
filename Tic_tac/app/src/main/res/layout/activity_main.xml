@@ -1,9 +1,8 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     tools:context=".MainActivity">
 
     <TextView
@@ -13,7 +12,7 @@
         android:text="Nom Cognoms"
         android:textSize="18sp"
         android:layout_marginTop="16dp"
-        android:layout_gravity="center_horizontal" />
+        android:layout_centerHorizontal="true" />
 
     <TextView
         android:id="@+id/tvHores"
@@ -22,30 +21,33 @@
         android:text="Hores del dia"
         android:textSize="16sp"
         android:layout_marginTop="16dp"
-        android:layout_gravity="center_horizontal" />
+        android:layout_below="@id/tvNomCognoms"
+        android:layout_centerHorizontal="true" />
 
-    <TextView
-        android:id="@+id/tvCronometre"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="00:00:00"
-        android:textSize="48sp"
-        android:layout_marginTop="32dp"
-        android:layout_gravity="center_horizontal" />
-
-    <View
+    <RelativeLayout
         android:id="@+id/cronometreCircle"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:background="@drawable/circle_running"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="16dp" />
+        android:background="@drawable/circle"
+        android:layout_below="@id/tvHores"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="32dp">
+
+        <TextView
+            android:id="@+id/tvCronometre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00:00:00"
+            android:textSize="48sp"
+            android:layout_centerInParent="true" />
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_horizontal"
+        android:layout_below="@id/cronometreCircle"
         android:layout_marginTop="16dp">
 
         <Button
@@ -55,18 +57,18 @@
             android:text="Iniciar" />
 
         <Button
-            android:id="@+id/btnParar"
+            android:id="@+id/btnPausar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Parar"
+            android:text="Pausar"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp" />
 
         <Button
-            android:id="@+id/btnReiniciar"
+            android:id="@+id/btnParar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Reiniciar" />
+            android:text="Parar" />
     </LinearLayout>
 
     <!-- Barra de navegació inferior -->
@@ -79,4 +81,5 @@
         app:menu="@menu/bottom_navigation_menu"
         app:itemIconTint="@color/nav_item_color"
         app:itemTextColor="@color/nav_item_color" />
-</LinearLayout>
+
+</RelativeLayout>
