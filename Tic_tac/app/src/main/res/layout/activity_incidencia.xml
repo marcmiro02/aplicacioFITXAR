@@ -33,7 +33,7 @@
         android:text="Afegir Incidència"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="60dp" />
 
     <!-- Barra de navegació inferior -->
     <com.google.android.material.bottomnavigation.BottomNavigationView

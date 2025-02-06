@@ -1,9 +1,8 @@
 package com.example.tiac_tac;
 
 public class Ip {
-    public static final String BASE_URL = "http://192.160.164.163:80/Tic_tac/"; // Canvia per la teva IP
+    public static final String BASE_URL = "http://192.160.164.163:80/Tic_tac/";
 
-    // Si necessites afegir endpoints específics
     public static final String LOGIN_URL = BASE_URL + "usuaris/login.php";
 
     public static final String PERFIL_URL = BASE_URL + "usuaris/perfil.php";
@@ -13,4 +12,8 @@ public class Ip {
     public static final String INCIDENCIA_AFEGIR_URL = BASE_URL + "usuaris/incidencia_afegir.php";
 
     public static final String INCIDENCIA_MOSTRAR_URL = BASE_URL + "usuaris/incidencia_mostrar.php";
+
+    public static final String HORES_URL = BASE_URL + "usuaris/hores.php";
+
+    public static final String TIPUS_INCIDENCIA_URL = BASE_URL + "usuaris/tipus_incidencia.php";
 }
