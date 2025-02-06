@@ -79,56 +79,13 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        // Configura la barra de navegació inferior
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
-        bottomNavigationView.setSelectedItemId(R.id.nav_inici); // Selecciona l'element d'inici
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            int id = item.getItemId();
-            if (id == R.id.nav_inici) {
-                // Redirigeix a l'activitat principal
-                Intent intentMain = new Intent(MainActivity.this, MainActivity.class);
-                intentMain.putExtra("user_data", userData);
-                intentMain.putExtra("horaris_data", horarisData);
-                startActivity(intentMain);
-                return true;
-            } else if (id == R.id.nav_horari) {
-                // Redirigeix a l'activitat d'horari
-                Intent intentHorari = new Intent(MainActivity.this, HorariActivity.class);
-                intentHorari.putExtra("user_data", userData);
-                intentHorari.putExtra("horaris_data", horarisData);
-                startActivity(intentHorari);
-                return true;
-            } else if (id == R.id.nav_profile) {
-                // Redirigeix a l'activitat de perfil
-                Intent intentProfile = new Intent(MainActivity.this, Perfil.class);
-                intentProfile.putExtra("user_data", userData);
-                intentProfile.putExtra("horaris_data", horarisData);
-                startActivity(intentProfile);
-                return true;
-            } else if (id == R.id.nav_incidencia) {
-                // Redirigeix a l'activitat d'incidència
-                Intent intentIncidencia = new Intent(MainActivity.this, Incidencia.class);
-                intentIncidencia.putExtra("user_data", userData);
-                intentIncidencia.putExtra("horaris_data", horarisData);
-                startActivity(intentIncidencia);
-                return true;
-            } else {
-                return false;
-            }
-        });
-
-        // Configura els botons del cronòmetre
-        btnIniciar.setOnClickListener(v -> iniciarCronometre());
-        btnPausar.setOnClickListener(v -> pausarCronometre());
-        btnParar.setOnClickListener(v -> pararCronometre());
-
         // Configura el LocationManager
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
                 currentLocation = location;
-                Log.d("MainActivity", "Latitud: " + location.getLatitude() + ", Longitud: " + location.getLongitude());
+                Log.d("MainActivity", "Location updated: " + location.getLatitude() + ", " + location.getLongitude());
             }
 
             @Override
@@ -143,13 +100,17 @@ public class MainActivity extends AppCompatActivity {
 
         // Comprova els permisos de localització
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.d("MainActivity", "Requesting location permissions");
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
         } else {
+            Log.d("MainActivity", "Location permissions already granted");
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
         }
 
-        // Mostrar les hores que li toquen aquell dia
-        mostrarHoresDelDia();
+        // Configura els botons del cronòmetre
+        btnIniciar.setOnClickListener(v -> iniciarCronometre());
+        btnPausar.setOnClickListener(v -> pausarCronometre());
+        btnParar.setOnClickListener(v -> pararCronometre());
     }
 
     @Override
@@ -157,63 +118,14 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d("MainActivity", "Location permissions granted");
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
                 }
             } else {
+                Log.d("MainActivity", "Location permissions denied");
                 Toast.makeText(this, "Permís de localització denegat", Toast.LENGTH_SHORT).show();
             }
-        }
-    }
-
-    private void mostrarHoresDelDia() {
-        try {
-            JSONArray horarisArray = new JSONArray(horarisData);
-            StringBuilder horesDelDia = new StringBuilder();
-
-            // Obtenir el dia de la setmana actual
-            Calendar calendar = Calendar.getInstance();
-            int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-            String diaSetmana = convertirDiaCatala(dayOfWeek);
-
-            // Iterar sobre les dades de l'horari
-            for (int i = 0; i < horarisArray.length(); i++) {
-                JSONObject horari = horarisArray.getJSONObject(i);
-                String dia = horari.getString("dia");
-                String horaInicio = horari.getString("hora_inicio").substring(0, 5); // Format HH:MM
-                String horaFin = horari.getString("hora_fin").substring(0, 5); // Format HH:MM
-
-                // Comparar el dia de la setmana
-                if (dia.equals(diaSetmana)) {
-                    horesDelDia.append(horaInicio).append(" - ").append(horaFin).append("\n");
-                }
-            }
-
-            tvHores.setText(horesDelDia.toString());
-        } catch (Exception e) {
-            Log.e("MainActivity", "Error en el format de les dades de l'horari: " + e.getMessage());
-            Toast.makeText(this, "Error en el format de les dades de l'horari", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private String convertirDiaCatala(int dayOfWeek) {
-        switch (dayOfWeek) {
-            case Calendar.MONDAY:
-                return "DILLUNS";
-            case Calendar.TUESDAY:
-                return "DIMARTS";
-            case Calendar.WEDNESDAY:
-                return "DIMECRES";
-            case Calendar.THURSDAY:
-                return "DIJOUS";
-            case Calendar.FRIDAY:
-                return "DIVENDRES";
-            case Calendar.SATURDAY:
-                return "DISSABTE";
-            case Calendar.SUNDAY:
-                return "DIUMENGE";
-            default:
-                return "";
         }
     }
 
@@ -283,6 +195,7 @@ public class MainActivity extends AppCompatActivity {
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
+                            Log.e("MainActivity", "Error en la connexió: " + error.getMessage());
                             Toast.makeText(MainActivity.this, "Error en la connexió", Toast.LENGTH_SHORT).show();
                         }
                     }) {
@@ -291,7 +204,19 @@ public class MainActivity extends AppCompatActivity {
                     Map<String, String> params = new HashMap<>();
                     params.put("usuari_id", String.valueOf(usuariId));
                     params.put("tipus", tipus);
-                    params.put("gps", currentLocation != null ? currentLocation.getLatitude() + "," + currentLocation.getLongitude() : "No GPS");
+                    try {
+                        if (currentLocation != null) {
+                            String gps = currentLocation.getLatitude() + "," + currentLocation.getLongitude();
+                            params.put("gps", gps);
+                            Log.d("MainActivity", "GPS data: " + gps);
+                        } else {
+                            params.put("gps", "No GPS");
+                            Log.d("MainActivity", "No GPS data available");
+                        }
+                    } catch (Exception e) {
+                        Log.e("MainActivity", "Error obtenint la ubicació GPS: " + e.getMessage());
+                        params.put("gps", "Error GPS");
+                    }
                     return params;
                 }
             };
