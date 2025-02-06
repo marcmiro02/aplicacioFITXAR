@@ -65,7 +65,7 @@ public class Perfil extends AppCompatActivity {
         bottomNavigationView.setSelectedItemId(R.id.nav_profile); // Selecciona l'element de perfil
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
-            if (id == R.id.nav_cronometre) {
+            if (id == R.id.nav_inici) {
                 // Redirigeix a l'activitat principal
                 Intent intent = new Intent(Perfil.this, MainActivity.class);
                 intent.putExtra("user_data", getIntent().getStringExtra("user_data"));
@@ -77,16 +77,19 @@ public class Perfil extends AppCompatActivity {
                 intent.putExtra("user_data", getIntent().getStringExtra("user_data"));
                 startActivity(intent);
                 return true;
+            }  else if (id == R.id.nav_profile) {
+                // Redirigeix a l'activitat d'incidència
+                Intent intent = new Intent(Perfil.this, Perfil.class);
+                intent.putExtra("user_data", getIntent().getStringExtra("user_data"));
+                startActivity(intent);
+                return true;
             } else if (id == R.id.nav_incidencia) {
                 // Redirigeix a l'activitat d'incidència
                 Intent intent = new Intent(Perfil.this, Incidencia.class);
                 intent.putExtra("user_data", getIntent().getStringExtra("user_data"));
                 startActivity(intent);
                 return true;
-            } else if (id == R.id.nav_profile) {
-                // Manté l'activitat de perfil
-                return true;
-            } else {
+            }else {
                 return false;
             }
         });

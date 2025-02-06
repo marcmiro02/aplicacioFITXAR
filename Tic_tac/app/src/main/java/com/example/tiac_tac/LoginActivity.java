@@ -97,6 +97,7 @@ public class LoginActivity extends AppCompatActivity {
                                     // Crear l'Intent per a MainActivity
                                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                     intent.putExtra("user_data", jsonResponse.toString());
+                                    intent.putExtra("horaris_data", jsonResponse.getJSONArray("horaris").toString());
                                     startActivity(intent);
                                     finish(); // Tanca LoginActivity
                                 }

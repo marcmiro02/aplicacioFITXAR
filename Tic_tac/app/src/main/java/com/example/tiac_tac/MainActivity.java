@@ -14,12 +14,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.json.JSONObject;
 
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-
 public class MainActivity extends AppCompatActivity {
 
     private TextView tvNomCognoms, tvCronometre;
@@ -30,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private long startTime = 0L;
     private boolean isRunning = false;
     private String userData;
+    private String horarisData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         // Obtenir les dades de l'usuari de l'intent
         Intent intent = getIntent();
         userData = intent.getStringExtra("user_data");
+        horarisData = intent.getStringExtra("horaris_data");
 
         // Mostrar les dades de l'usuari (exemple)
         try {
@@ -62,25 +58,32 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
-            if (id == R.id.nav_cronometre) {
-                // Manté l'activitat principal
-                return true;
-            } else if (id == R.id.nav_profile) {
-                // Redirigeix a l'activitat de perfil
-                Intent intentProfile = new Intent(MainActivity.this, Perfil.class);
-                intentProfile.putExtra("user_data", userData);
-                startActivity(intentProfile);
+            if (id == R.id.nav_inici) {
+                // Redirigeix a l'activitat principal
+                Intent intentMain = new Intent(MainActivity.this, MainActivity.class);
+                intentMain.putExtra("user_data", userData);
+                intentMain.putExtra("horaris_data", horarisData);
+                startActivity(intentMain);
                 return true;
             } else if (id == R.id.nav_horari) {
                 // Redirigeix a l'activitat d'horari
                 Intent intentHorari = new Intent(MainActivity.this, HorariActivity.class);
                 intentHorari.putExtra("user_data", userData);
+                intentHorari.putExtra("horaris_data", horarisData);
                 startActivity(intentHorari);
+                return true;
+            } else if (id == R.id.nav_profile) {
+                // Redirigeix a l'activitat de perfil
+                Intent intentProfile = new Intent(MainActivity.this, Perfil.class);
+                intentProfile.putExtra("user_data", userData);
+                intentProfile.putExtra("horaris_data", horarisData);
+                startActivity(intentProfile);
                 return true;
             } else if (id == R.id.nav_incidencia) {
                 // Redirigeix a l'activitat d'incidència
                 Intent intentIncidencia = new Intent(MainActivity.this, Incidencia.class);
                 intentIncidencia.putExtra("user_data", userData);
+                intentIncidencia.putExtra("horaris_data", horarisData);
                 startActivity(intentIncidencia);
                 return true;
             } else {
@@ -126,8 +129,4 @@ public class MainActivity extends AppCompatActivity {
             handler.postDelayed(this, 1000);
         }
     };
-
-    private void showSettings() {
-        // Implementa accions
-    }
 }
