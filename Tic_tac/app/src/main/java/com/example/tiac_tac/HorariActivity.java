@@ -37,6 +37,7 @@ public class HorariActivity extends AppCompatActivity {
 
         // Configura la barra de navegació inferior
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        bottomNavigationView.setSelectedItemId(R.id.nav_horari); // Selecciona l'element d'horari
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_inici) {
