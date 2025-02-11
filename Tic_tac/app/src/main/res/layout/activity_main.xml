@@ -24,52 +24,48 @@
         android:layout_below="@id/tvNomCognoms"
         android:layout_centerHorizontal="true" />
 
-    <RelativeLayout
-        android:id="@+id/cronometreCircle"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:background="@drawable/circle"
+    <Button
+        android:id="@+id/btnIniciar"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:text="Iniciar"
+        android:background="@drawable/circle_button"
         android:layout_below="@id/tvHores"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="32dp">
+        android:layout_marginTop="32dp" />
 
-        <TextView
-            android:id="@+id/tvCronometre"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="00:00:00"
-            android:textSize="48sp"
-            android:layout_centerInParent="true" />
-    </RelativeLayout>
+    <Button
+        android:id="@+id/btnParar"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:text="Parar"
+        android:background="@drawable/circle_button"
+        android:layout_below="@id/btnIniciar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:visibility="gone" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/tvHoraInici"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_horizontal"
-        android:layout_below="@id/cronometreCircle"
-        android:layout_marginTop="16dp">
+        android:text="Hora d'inici: "
+        android:textSize="16sp"
+        android:layout_below="@id/btnParar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:visibility="gone" />
 
-        <Button
-            android:id="@+id/btnIniciar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Iniciar" />
-
-        <Button
-            android:id="@+id/btnPausar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Pausar"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp" />
-
-        <Button
-            android:id="@+id/btnParar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Parar" />
-    </LinearLayout>
+    <TextView
+        android:id="@+id/tvHoraSortida"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hora de sortida: "
+        android:textSize="16sp"
+        android:layout_below="@id/tvHoraInici"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:visibility="gone" />
 
     <!-- Barra de navegació inferior -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
