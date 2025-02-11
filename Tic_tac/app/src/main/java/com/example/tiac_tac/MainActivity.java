@@ -212,11 +212,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void guardarFitxatge(String tipus) {
+       private void guardarFitxatge(String tipus) {
         try {
             JSONObject userJson = new JSONObject(userData);
             int usuariId = userJson.getInt("id_usuari");
-
+    
             StringRequest stringRequest = new StringRequest(Request.Method.POST, Ip.FITXAR_URL,
                     new Response.Listener<String>() {
                         @Override
@@ -256,8 +256,8 @@ public class MainActivity extends AppCompatActivity {
                             Log.d("MainActivity", "No GPS data available");
                         }
                         if (tipus.equals("sortida")) {
-                            double horesTreballades = calcularHoresTreballades();
-                            params.put("hores_treballades", String.valueOf(horesTreballades));
+                            String horesTreballades = calcularHoresTreballades();
+                            params.put("hores_treballades", horesTreballades);
                         }
                     } catch (Exception e) {
                         Log.e("MainActivity", "Error obtenint la ubicació GPS: " + e.getMessage());
@@ -266,7 +266,7 @@ public class MainActivity extends AppCompatActivity {
                     return params;
                 }
             };
-
+    
             RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
             requestQueue.add(stringRequest);
         } catch (Exception e) {
@@ -274,34 +274,25 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Error en obtenir les dades de l'usuari", Toast.LENGTH_SHORT).show();
         }
     }
-
-    private double calcularHoresTreballades() {
-        double horesTreballades = 0;
+    
+    private String calcularHoresTreballades() {
+        String horesTreballades = "00:00:00";
         try {
             // Obtenir les hores d'inici i sortida
             String horaInici = tvHoraInici.getText().toString().replace("Hora d'inici: ", "");
             String horaSortida = tvHoraSortida.getText().toString().replace("Hora de sortida: ", "");
-
+    
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
             Date dateInici = sdf.parse(horaInici);
             Date dateSortida = sdf.parse(horaSortida);
-
-            // Obtenir les hores esperades des de tvHores
-            String[] horesEsperadesArray = tvHores.getText().toString().split("\n");
-
-            for (String horesEsperades : horesEsperadesArray) {
-                String[] hores = horesEsperades.split(" - ");
-                Date horaIniciEsperada = sdf.parse(hores[0] + ":00");
-                Date horaFiEsperada = sdf.parse(hores[1] + ":00");
-
-                // Calcular les hores treballades dins de l'interval esperat
-                if (dateInici.before(horaFiEsperada) && dateSortida.after(horaIniciEsperada)) {
-                    Date horaIniciTreballada = dateInici.after(horaIniciEsperada) ? dateInici : horaIniciEsperada;
-                    Date horaFiTreballada = dateSortida.before(horaFiEsperada) ? dateSortida : horaFiEsperada;
-                    long diff = horaFiTreballada.getTime() - horaIniciTreballada.getTime();
-                    horesTreballades += (double) diff / (1000 * 60 * 60);
-                }
-            }
+    
+            long diff = dateSortida.getTime() - dateInici.getTime();
+            long seconds = diff / 1000;
+            long hours = seconds / 3600;
+            long minutes = (seconds % 3600) / 60;
+            long secs = seconds % 60;
+    
+            horesTreballades = String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, secs);
         } catch (Exception e) {
             Log.e("MainActivity", "Error en calcular les hores treballades: " + e.getMessage());
             Toast.makeText(this, "Error en calcular les hores treballades", Toast.LENGTH_SHORT).show();
