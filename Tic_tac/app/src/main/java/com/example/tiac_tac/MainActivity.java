@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvHores;
     private Button btnIniciar;
     private Button btnParar;
-
+ 
     private boolean isRunning = false;
     private String userData;
     private String horarisData;
