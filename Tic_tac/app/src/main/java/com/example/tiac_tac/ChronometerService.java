@@ -16,6 +16,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -107,7 +108,7 @@ public class ChronometerService extends Service {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
-                String startTimeString = sdf.format(startTime);
+                String startTimeString = sdf.format(new Date(startTime));
                 params.put("startTime", startTimeString);
                 return params;
             }
@@ -123,7 +124,7 @@ public class ChronometerService extends Service {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        // Gestió de la resposta del servidor
+                        // Gestió de la resposta
                     }
                 },
                 new Response.ErrorListener() {

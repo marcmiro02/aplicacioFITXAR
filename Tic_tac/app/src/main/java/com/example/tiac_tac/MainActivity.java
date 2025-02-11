@@ -47,6 +47,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvCronometre;
     private TextView tvHores;
     private View cronometreCircle;
+    private Button btnIniciar;
+    private Button btnPausar;
+    private Button btnParar;
 
     private final Handler handler = new Handler();
     private boolean isRunning = false;
@@ -82,9 +85,12 @@ public class MainActivity extends AppCompatActivity {
         tvCronometre = findViewById(R.id.tvCronometre);
         tvHores = findViewById(R.id.tvHores);
         cronometreCircle = findViewById(R.id.cronometreCircle);
-        Button btnIniciar = findViewById(R.id.btnIniciar);
-        Button btnPausar = findViewById(R.id.btnPausar);
-        Button btnParar = findViewById(R.id.btnParar);
+        btnIniciar = findViewById(R.id.btnIniciar);
+        btnPausar = findViewById(R.id.btnPausar);
+        btnParar = findViewById(R.id.btnParar);
+
+        // Deshabilita el botó d'iniciar fins que es trobi la ubicació
+        btnIniciar.setEnabled(false);
 
         // Obtenir les dades de l'usuari de l'intent
         Intent intent = getIntent();
@@ -108,6 +114,8 @@ public class MainActivity extends AppCompatActivity {
             public void onLocationChanged(@NonNull Location location) {
                 currentLocation = location;
                 Log.d("MainActivity", "Location updated: " + location.getLatitude() + ", " + location.getLongitude());
+                // Habilita el botó d'iniciar quan es trobi la ubicació
+                btnIniciar.setEnabled(true);
             }
 
             @Override
