@@ -40,37 +40,28 @@ public class HorariActivity extends AppCompatActivity {
         bottomNavigationView.setSelectedItemId(R.id.nav_horari); // Selecciona l'element d'horari
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
+            Intent navIntent;
             if (id == R.id.nav_inici) {
                 // Redirigeix a l'activitat principal
-                Intent intentMain = new Intent(HorariActivity.this, MainActivity.class);
-                intentMain.putExtra("user_data", userData);
-                intentMain.putExtra("horaris_data", horarisData);
-                startActivity(intentMain);
-                return true;
+                navIntent = new Intent(HorariActivity.this, MainActivity.class);
             } else if (id == R.id.nav_horari) {
                 // Redirigeix a l'activitat d'horari
-                Intent intentHorari = new Intent(HorariActivity.this, HorariActivity.class);
-                intentHorari.putExtra("user_data", userData);
-                intentHorari.putExtra("horaris_data", horarisData);
-                startActivity(intentHorari);
-                return true;
+                navIntent = new Intent(HorariActivity.this, HorariActivity.class);
             } else if (id == R.id.nav_incidencia) {
                 // Redirigeix a l'activitat d'incidència
-                Intent intentIncidencia = new Intent(HorariActivity.this, Incidencia.class);
-                intentIncidencia.putExtra("user_data", userData);
-                intentIncidencia.putExtra("horaris_data", horarisData);
-                startActivity(intentIncidencia);
-                return true;
+                navIntent = new Intent(HorariActivity.this, Incidencia.class);
             } else if (id == R.id.nav_profile) {
                 // Redirigeix a l'activitat de perfil
-                Intent intentProfile = new Intent(HorariActivity.this, Perfil.class);
-                intentProfile.putExtra("user_data", userData);
-                intentProfile.putExtra("horaris_data", horarisData);
-                startActivity(intentProfile);
-                return true;
+                navIntent = new Intent(HorariActivity.this, Perfil.class);
             } else {
                 return false;
             }
+            navIntent.putExtra("user_data", userData);
+            navIntent.putExtra("horaris_data", horarisData);
+            navIntent.putExtra("isRunning", getIntent().getBooleanExtra("isRunning", false));
+            navIntent.putExtra("horaInici", getIntent().getStringExtra("horaInici"));
+            startActivity(navIntent);
+            return true;
         });
 
         // Assignar la vista de la taula

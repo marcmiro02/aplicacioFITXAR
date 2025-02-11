@@ -70,37 +70,28 @@ public class Perfil extends AppCompatActivity {
         bottomNavigationView.setSelectedItemId(R.id.nav_profile); // Selecciona l'element de perfil
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
+            Intent navIntent;
             if (id == R.id.nav_inici) {
                 // Redirigeix a l'activitat principal
-                Intent intentPerfil = new Intent(Perfil.this, MainActivity.class);
-                intentPerfil.putExtra("user_data", userData);
-                intentPerfil.putExtra("horaris_data", horarisData);
-                startActivity(intentPerfil);
-                return true;
+                navIntent = new Intent(Perfil.this, MainActivity.class);
             } else if (id == R.id.nav_horari) {
                 // Redirigeix a l'activitat d'horari
-                Intent intentHorari = new Intent(Perfil.this, HorariActivity.class);
-                intentHorari.putExtra("user_data", userData);
-                intentHorari.putExtra("horaris_data", horarisData);
-                startActivity(intentHorari);
-                return true;
-            } else if (id == R.id.nav_profile) {
-                // Redirigeix a l'activitat de perfil
-                Intent intentProfile = new Intent(Perfil.this, Perfil.class);
-                intentProfile.putExtra("user_data", userData);
-                intentProfile.putExtra("horaris_data", horarisData);
-                startActivity(intentProfile);
-                return true;
+                navIntent = new Intent(Perfil.this, HorariActivity.class);
             } else if (id == R.id.nav_incidencia) {
                 // Redirigeix a l'activitat d'incidència
-                Intent intentIncidencia = new Intent(Perfil.this, Incidencia.class);
-                intentIncidencia.putExtra("user_data", userData);
-                intentIncidencia.putExtra("horaris_data", horarisData);
-                startActivity(intentIncidencia);
-                return true;
+                navIntent = new Intent(Perfil.this, Incidencia.class);
+            } else if (id == R.id.nav_profile) {
+                // Redirigeix a l'activitat de perfil
+                navIntent = new Intent(Perfil.this, Perfil.class);
             } else {
                 return false;
             }
+            navIntent.putExtra("user_data", userData);
+            navIntent.putExtra("horaris_data", horarisData);
+            navIntent.putExtra("isRunning", getIntent().getBooleanExtra("isRunning", false));
+            navIntent.putExtra("horaInici", getIntent().getStringExtra("horaInici"));
+            startActivity(navIntent);
+            return true;
         });
 
         // Configura els botons d'ull per mostrar/amagar la contrasenya

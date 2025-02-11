@@ -128,34 +128,53 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setSelectedItemId(R.id.nav_inici);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
+            Intent intentMain = new Intent(MainActivity.this, MainActivity.class);
+            intentMain.putExtra("user_data", userData);
+            intentMain.putExtra("horaris_data", horarisData);
+            intentMain.putExtra("isRunning", isRunning);
+            intentMain.putExtra("horaInici", tvHoraInici.getText().toString());
             if (id == R.id.nav_inici) {
-                Intent intentMain = new Intent(MainActivity.this, MainActivity.class);
-                intentMain.putExtra("user_data", userData);
-                intentMain.putExtra("horaris_data", horarisData);
                 startActivity(intentMain);
                 return true;
             } else if (id == R.id.nav_horari) {
                 Intent intentHorari = new Intent(MainActivity.this, HorariActivity.class);
-                intentHorari.putExtra("user_data", userData);
-                intentHorari.putExtra("horaris_data", horarisData);
+                intentHorari.putExtras(intentMain.getExtras());
                 startActivity(intentHorari);
                 return true;
             } else if (id == R.id.nav_profile) {
                 Intent intentProfile = new Intent(MainActivity.this, Perfil.class);
-                intentProfile.putExtra("user_data", userData);
-                intentProfile.putExtra("horaris_data", horarisData);
+                intentProfile.putExtras(intentMain.getExtras());
                 startActivity(intentProfile);
                 return true;
             } else if (id == R.id.nav_incidencia) {
                 Intent intentIncidencia = new Intent(MainActivity.this, Incidencia.class);
-                intentIncidencia.putExtra("user_data", userData);
-                intentIncidencia.putExtra("horaris_data", horarisData);
+                intentIncidencia.putExtras(intentMain.getExtras());
                 startActivity(intentIncidencia);
                 return true;
             } else {
                 return false;
             }
         });
+
+        // Restaurar l'estat del botó i la variable isRunning
+        if (intent.hasExtra("isRunning")) {
+            isRunning = intent.getBooleanExtra("isRunning", false);
+            String horaInici = intent.getStringExtra("horaInici");
+            tvHoraInici.setText(horaInici);
+
+            if (isRunning) {
+                btnIniciar.setVisibility(View.GONE);
+                btnParar.setVisibility(View.VISIBLE);
+                btnParar.setEnabled(true);
+                tvHoraInici.setVisibility(View.VISIBLE);
+                tvHoraSortida.setVisibility(View.GONE);
+            } else {
+                btnIniciar.setVisibility(View.VISIBLE);
+                btnParar.setVisibility(View.GONE);
+                btnIniciar.setEnabled(true);
+                tvHoraSortida.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     private void iniciarCronometre() {
@@ -413,7 +432,8 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Error en verificar les hores treballades", Toast.LENGTH_SHORT).show();
         }
     }
-        @Override
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean("isRunning", isRunning);
