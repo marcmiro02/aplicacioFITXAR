@@ -1,19 +1,25 @@
 package com.example.tiac_tac;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -29,20 +35,23 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView tvNomCognoms, tvCronometre, tvHores;
+    private TextView tvCronometre;
+    private TextView tvHores;
     private View cronometreCircle;
-    private Button btnIniciar, btnPausar, btnParar;
 
-    private Handler handler = new Handler();
-    private long startTime = 0L;
+    private final Handler handler = new Handler();
     private boolean isRunning = false;
     private boolean isPaused = false;
+    private long startTime = 0L;
     private String userData;
     private String horarisData;
 
@@ -50,19 +59,32 @@ public class MainActivity extends AppCompatActivity {
     private LocationListener locationListener;
     private Location currentLocation;
 
+    private BroadcastReceiver timeUpdateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (ChronometerService.BROADCAST_ACTION.equals(intent.getAction())) {
+                int hours = intent.getIntExtra("hours", 0);
+                int minutes = intent.getIntExtra("minutes", 0);
+                int seconds = intent.getIntExtra("seconds", 0);
+                tvCronometre.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
+            }
+        }
+    };
+
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         // Enllaça les vistes
-        tvNomCognoms = findViewById(R.id.tvNomCognoms);
+        TextView tvNomCognoms = findViewById(R.id.tvNomCognoms);
         tvCronometre = findViewById(R.id.tvCronometre);
         tvHores = findViewById(R.id.tvHores);
         cronometreCircle = findViewById(R.id.cronometreCircle);
-        btnIniciar = findViewById(R.id.btnIniciar);
-        btnPausar = findViewById(R.id.btnPausar);
-        btnParar = findViewById(R.id.btnParar);
+        Button btnIniciar = findViewById(R.id.btnIniciar);
+        Button btnPausar = findViewById(R.id.btnPausar);
+        Button btnParar = findViewById(R.id.btnParar);
 
         // Obtenir les dades de l'usuari de l'intent
         Intent intent = getIntent();
@@ -83,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         locationListener = new LocationListener() {
             @Override
-            public void onLocationChanged(Location location) {
+            public void onLocationChanged(@NonNull Location location) {
                 currentLocation = location;
                 Log.d("MainActivity", "Location updated: " + location.getLatitude() + ", " + location.getLongitude());
             }
@@ -92,10 +114,10 @@ public class MainActivity extends AppCompatActivity {
             public void onStatusChanged(String provider, int status, Bundle extras) {}
 
             @Override
-            public void onProviderEnabled(String provider) {}
+            public void onProviderEnabled(@NonNull String provider) {}
 
             @Override
-            public void onProviderDisabled(String provider) {}
+            public void onProviderDisabled(@NonNull String provider) {}
         };
 
         // Comprova els permisos de localització
@@ -114,10 +136,73 @@ public class MainActivity extends AppCompatActivity {
 
         // Mostrar les hores que li toquen aquell dia
         mostrarHoresDelDia();
+
+        // Configura la barra de navegació inferior
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        bottomNavigationView.setSelectedItemId(R.id.nav_inici); // Selecciona l'element d'incidència
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_inici) {
+                // Redirigeix a l'activitat principal
+                Intent intentMain = new Intent(MainActivity.this, MainActivity.class);
+                intentMain.putExtra("user_data", userData);
+                intentMain.putExtra("horaris_data", horarisData);
+                startActivity(intentMain);
+                return true;
+            } else if (id == R.id.nav_horari) {
+                // Redirigeix a l'activitat d'horari
+                Intent intentHorari = new Intent(MainActivity.this, HorariActivity.class);
+                intentHorari.putExtra("user_data", userData);
+                intentHorari.putExtra("horaris_data", horarisData);
+                startActivity(intentHorari);
+                return true;
+            } else if (id == R.id.nav_profile) {
+                // Redirigeix a l'activitat de perfil
+                Intent intentProfile = new Intent(MainActivity.this, Perfil.class);
+                intentProfile.putExtra("user_data", userData);
+                intentProfile.putExtra("horaris_data", horarisData);
+                startActivity(intentProfile);
+                return true;
+            } else if (id == R.id.nav_incidencia) {
+                // Redirigeix a l'activitat d'incidència
+                Intent intentIncidencia = new Intent(MainActivity.this, Incidencia.class);
+                intentIncidencia.putExtra("user_data", userData);
+                intentIncidencia.putExtra("horaris_data", horarisData);
+                startActivity(intentIncidencia);
+                return true;
+            } else {
+                return false;
+            }
+        });
+
+        // Registra el receptor per actualitzar el cronòmetre
+        registerReceiver(timeUpdateReceiver, new IntentFilter(ChronometerService.BROADCAST_ACTION));
+
+        // Restaurar l'estat del cronòmetre
+        restoreChronometerState();
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    protected void onResume() {
+        super.onResume();
+        // Obtenir les dades de l'usuari de l'intent
+        Intent intent = getIntent();
+        userData = intent.getStringExtra("user_data");
+        horarisData = intent.getStringExtra("horaris_data");
+
+        // Mostrar les hores que li toquen aquell dia
+        mostrarHoresDelDia();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Desregistra el receptor per evitar fuites de memòria
+        unregisterReceiver(timeUpdateReceiver);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -185,22 +270,23 @@ public class MainActivity extends AppCompatActivity {
 
     private void iniciarCronometre() {
         if (!isRunning) {
-            startTime = System.currentTimeMillis();
-            handler.postDelayed(updateTimerThread, 0);
             isRunning = true;
             isPaused = false;
             cronometreCircle.setBackgroundResource(R.drawable.circle_running);
             guardarFitxatge("entrada");
+
+            // Start the ChronometerService
+            Intent serviceIntent = new Intent(this, ChronometerService.class);
+            serviceIntent.setAction("START");
+            startService(serviceIntent);
         }
     }
 
     private void pausarCronometre() {
         if (isRunning && !isPaused) {
-            handler.removeCallbacks(updateTimerThread);
             isPaused = true;
             cronometreCircle.setBackgroundResource(R.drawable.circle_paused);
-        } else if (isRunning && isPaused) {
-            handler.postDelayed(updateTimerThread, 0);
+        } else if (isRunning) {
             isPaused = false;
             cronometreCircle.setBackgroundResource(R.drawable.circle_running);
         }
@@ -208,26 +294,79 @@ public class MainActivity extends AppCompatActivity {
 
     private void pararCronometre() {
         if (isRunning) {
-            handler.removeCallbacks(updateTimerThread);
             isRunning = false;
             isPaused = false;
             cronometreCircle.setBackgroundResource(R.drawable.circle_stopped);
             guardarFitxatge("sortida");
+
+            // Stop the ChronometerService
+            Intent serviceIntent = new Intent(this, ChronometerService.class);
+            serviceIntent.setAction("STOP");
+            startService(serviceIntent);
         }
     }
 
-    private Runnable updateTimerThread = new Runnable() {
-        public void run() {
-            long timeInMillis = System.currentTimeMillis() - startTime;
-            int seconds = (int) (timeInMillis / 1000);
-            int minutes = seconds / 60;
-            int hours = minutes / 60;
-            seconds = seconds % 60;
-            minutes = minutes % 60;
-            tvCronometre.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
-            handler.postDelayed(this, 1000);
+    private void restoreChronometerState() {
+        // Recupera l'hora d'inici del cronòmetre des de la base de dades
+        String url = Ip.FITXAR_URL;
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject jsonResponse = new JSONObject(response);
+                            if (jsonResponse.getBoolean("isRunning")) {
+                                String horaInici = jsonResponse.getString("hora_inici");
+                                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+                                Date date = sdf.parse(horaInici);
+                                startTime = date.getTime();
+                                long elapsedTime = SystemClock.elapsedRealtime() - startTime;
+                                int seconds = (int) (elapsedTime / 1000);
+                                int minutes = seconds / 60;
+                                int hours = minutes / 60;
+                                seconds = seconds % 60;
+                                minutes = minutes % 60;
+                                tvCronometre.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
+                                cronometreCircle.setBackgroundResource(R.drawable.circle_running);
+                                isRunning = true;
+                                handler.postDelayed(updateTimerThread, 1000);
+                            } else {
+                                cronometreCircle.setBackgroundResource(R.drawable.circle_stopped);
+                                isRunning = false;
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("MainActivity", "Error en la connexió: " + error.getMessage());
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("action", "restore");
+                params.put("usuari_id", getUserIdFromUserData());
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+    }
+
+    private String getUserIdFromUserData() {
+        try {
+            JSONObject userJson = new JSONObject(userData);
+            return userJson.getString("id_usuari");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
         }
-    };
+    }
 
     private void guardarFitxatge(String tipus) {
         try {
@@ -282,4 +421,17 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Error en obtenir les dades de l'usuari", Toast.LENGTH_SHORT).show();
         }
     }
+
+    private final Runnable updateTimerThread = new Runnable() {
+        public void run() {
+            long timeInMillis = SystemClock.elapsedRealtime() - startTime;
+            int seconds = (int) (timeInMillis / 1000);
+            int minutes = seconds / 60;
+            int hours = minutes / 60;
+            seconds = seconds % 60;
+            minutes = minutes % 60;
+            tvCronometre.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
+            handler.postDelayed(this, 1000);
+        }
+    };
 }

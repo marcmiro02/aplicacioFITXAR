@@ -24,7 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Perfil extends AppCompatActivity {
-
+    private String userData;
+    private String horarisData;
     private EditText etEmail, etCurrentPassword, etNewPassword, etVerifyPassword;
     private ImageView ivToggleCurrentPassword, ivToggleNewPassword, ivToggleVerifyPassword;
     private Button btnUpdatePassword;
@@ -38,6 +39,7 @@ public class Perfil extends AppCompatActivity {
         setContentView(R.layout.activity_perfil);
 
         // Enllaça les vistes
+
         etEmail = findViewById(R.id.etEmail);
         etCurrentPassword = findViewById(R.id.etCurrentPassword);
         etNewPassword = findViewById(R.id.etNewPassword);
@@ -59,7 +61,10 @@ public class Perfil extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
+        // Obtenir les dades de l'usuari de l'intent
+        Intent intent = getIntent();
+        userData = intent.getStringExtra("user_data");
+        horarisData = intent.getStringExtra("horaris_data");
         // Configura la barra de navegació inferior
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setSelectedItemId(R.id.nav_profile); // Selecciona l'element de perfil
@@ -67,29 +72,33 @@ public class Perfil extends AppCompatActivity {
             int id = item.getItemId();
             if (id == R.id.nav_inici) {
                 // Redirigeix a l'activitat principal
-                Intent intent = new Intent(Perfil.this, MainActivity.class);
-                intent.putExtra("user_data", getIntent().getStringExtra("user_data"));
-                startActivity(intent);
+                Intent intentPerfil = new Intent(Perfil.this, MainActivity.class);
+                intentPerfil.putExtra("user_data", userData);
+                intentPerfil.putExtra("horaris_data", horarisData);
+                startActivity(intentPerfil);
                 return true;
             } else if (id == R.id.nav_horari) {
                 // Redirigeix a l'activitat d'horari
-                Intent intent = new Intent(Perfil.this, HorariActivity.class);
-                intent.putExtra("user_data", getIntent().getStringExtra("user_data"));
-                startActivity(intent);
+                Intent intentHorari = new Intent(Perfil.this, HorariActivity.class);
+                intentHorari.putExtra("user_data", userData);
+                intentHorari.putExtra("horaris_data", horarisData);
+                startActivity(intentHorari);
                 return true;
-            }  else if (id == R.id.nav_profile) {
-                // Redirigeix a l'activitat d'incidència
-                Intent intent = new Intent(Perfil.this, Perfil.class);
-                intent.putExtra("user_data", getIntent().getStringExtra("user_data"));
-                startActivity(intent);
+            } else if (id == R.id.nav_profile) {
+                // Redirigeix a l'activitat de perfil
+                Intent intentProfile = new Intent(Perfil.this, Perfil.class);
+                intentProfile.putExtra("user_data", userData);
+                intentProfile.putExtra("horaris_data", horarisData);
+                startActivity(intentProfile);
                 return true;
             } else if (id == R.id.nav_incidencia) {
                 // Redirigeix a l'activitat d'incidència
-                Intent intent = new Intent(Perfil.this, Incidencia.class);
-                intent.putExtra("user_data", getIntent().getStringExtra("user_data"));
-                startActivity(intent);
+                Intent intentIncidencia = new Intent(Perfil.this, Incidencia.class);
+                intentIncidencia.putExtra("user_data", userData);
+                intentIncidencia.putExtra("horaris_data", horarisData);
+                startActivity(intentIncidencia);
                 return true;
-            }else {
+            } else {
                 return false;
             }
         });
