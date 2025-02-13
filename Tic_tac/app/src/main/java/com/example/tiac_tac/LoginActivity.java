@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -42,6 +43,7 @@ public class LoginActivity extends AppCompatActivity {
         loginPassword = findViewById(R.id.login_password);
         ivTogglePassword = findViewById(R.id.ivTogglePassword);
         Button buttonLogin = findViewById(R.id.buttonLogin);
+        TextView forgotPassword = findViewById(R.id.forgot_password);
 
         // Configura el botó d'ull per mostrar/amagar la contrasenya
         ivTogglePassword.setOnClickListener(view -> {
@@ -68,6 +70,13 @@ public class LoginActivity extends AppCompatActivity {
                 } else {
                     executarServei(Ip.LOGIN_URL, nom, password);
                 }
+            }
+        });
+        forgotPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoginActivity.this, RecuperarContrasenyaActivity.class);
+                startActivity(intent);
             }
         });
     }

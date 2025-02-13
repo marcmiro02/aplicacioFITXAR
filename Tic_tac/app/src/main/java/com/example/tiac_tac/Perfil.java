@@ -194,7 +194,7 @@ public class Perfil extends AppCompatActivity {
                         // Redirigeix a l'activitat de login
                         Intent intent = new Intent(Perfil.this, LoginActivity.class);
                         startActivity(intent);
-                        finish(); // Tanca PerfilActivity
+                        finish();
                     });
                 } else {
                     runOnUiThread(() -> Toast.makeText(Perfil.this, "Error en actualitzar la contrasenya.", Toast.LENGTH_SHORT).show());

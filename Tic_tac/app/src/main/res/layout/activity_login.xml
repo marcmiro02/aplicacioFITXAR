@@ -8,21 +8,31 @@
     android:background="@color/white"
     tools:context=".LoginActivity">
 
-    <!-- Títol del formulari -->
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:src="@drawable/logo_sense_fons"
+        android:contentDescription="@string/app_name"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="100dp"/>
+
     <TextView
         android:id="@+id/login_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Benvingut!"
+        android:text="@string/benvingut"
         android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="@color/black"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="180dp"/>
+        app:layout_constraintTop_toBottomOf="@id/logo"
 
-    <!-- Camp de text: Nom d'usuari -->
+        android:layout_marginTop="30dp"/>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/username_layout"
         android:layout_width="0dp"
@@ -38,6 +48,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginEnd="8dp"
+            android:contentDescription="@string/todo"
             android:src="@drawable/ic_user"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -48,7 +59,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:hint="Nom d'usuari"
+            android:autofillHints=""
+            android:hint="@string/nom_d_usuari"
             android:background="@android:color/transparent"
             android:padding="8dp"
             android:inputType="text"
@@ -58,7 +70,6 @@
             app:layout_constraintBottom_toBottomOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Camp de text: Contrasenya -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/password_layout"
         android:layout_width="0dp"
@@ -74,6 +85,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginEnd="8dp"
+            android:contentDescription="@string/todo_2"
             android:src="@drawable/ic_lock"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -84,7 +96,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:hint="Contrasenya"
+            android:autofillHints=""
+            android:hint="@string/contrasenya"
             android:background="@android:color/transparent"
             android:padding="8dp"
             android:inputType="textPassword"
@@ -97,19 +110,19 @@
             android:id="@+id/ivTogglePassword"
             android:layout_width="24dp"
             android:layout_height="24dp"
+            android:contentDescription="@string/todo_3"
             android:src="@drawable/ic_eye"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Botó de login -->
     <Button
         android:id="@+id/buttonLogin"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="Inicia sessió"
+        android:text="@string/inicia_sessi"
         android:backgroundTint="@color/purple_500"
         android:textColor="@android:color/white"
         android:textAllCaps="false"
@@ -118,13 +131,12 @@
         app:layout_constraintTop_toBottomOf="@id/password_layout"
         android:layout_marginHorizontal="16dp" />
 
-    <!-- Enllaç per a recuperar la contrasenya -->
     <TextView
         android:id="@+id/forgot_password"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Has oblidat la contrasenya?"
+        android:text="@string/has_oblidat_la_contrasenya"
         android:textColor="@color/purple_700"
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/buttonLogin"

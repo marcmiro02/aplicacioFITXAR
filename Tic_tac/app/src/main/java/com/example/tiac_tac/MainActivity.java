@@ -43,9 +43,11 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvHoraInici;
     private TextView tvHoraSortida;
     private TextView tvHores;
+    private TextView tvEsperantUbicacio;
     private Button btnIniciar;
     private Button btnParar;
- 
+    private Button btnInforme;
+
     private boolean isRunning = false;
     private String userData;
     private String horarisData;
@@ -64,12 +66,15 @@ public class MainActivity extends AppCompatActivity {
         tvHoraInici = findViewById(R.id.tvHoraInici);
         tvHoraSortida = findViewById(R.id.tvHoraSortida);
         tvHores = findViewById(R.id.tvHores);
+        tvEsperantUbicacio = findViewById(R.id.tvEsperantUbicacio);
         btnIniciar = findViewById(R.id.btnIniciar);
         btnParar = findViewById(R.id.btnParar);
+        btnInforme = findViewById(R.id.btnInforme);
 
         // Deshabilita el botó d'iniciar fins que es trobi la ubicació
         btnIniciar.setEnabled(false);
         btnParar.setEnabled(false);
+        tvEsperantUbicacio.setVisibility(View.VISIBLE);
 
         // Obtenir les dades de l'usuari de l'intent
         Intent intent = getIntent();
@@ -95,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("MainActivity", "Location updated: " + location.getLatitude() + ", " + location.getLongitude());
                 // Habilita el botó d'iniciar quan es trobi la ubicació
                 btnIniciar.setEnabled(true);
+                tvEsperantUbicacio.setVisibility(View.GONE);
             }
 
             @Override
@@ -119,6 +125,14 @@ public class MainActivity extends AppCompatActivity {
         // Configura els botons
         btnIniciar.setOnClickListener(v -> iniciarCronometre());
         btnParar.setOnClickListener(v -> pararCronometre());
+        btnInforme.setOnClickListener(v -> {
+            Intent intentInforme = new Intent(MainActivity.this, InformeActivity.class);
+            intentInforme.putExtra("user_data", userData);
+            intentInforme.putExtra("horaris_data", horarisData);
+            intentInforme.putExtra("isRunning", isRunning);
+            intentInforme.putExtra("horaInici", tvHoraInici.getText().toString());
+            startActivity(intentInforme);
+        });
 
         // Mostrar les hores que li toquen aquell dia
         mostrarHoresDelDia();
@@ -211,26 +225,20 @@ public class MainActivity extends AppCompatActivity {
             guardarFitxatge("sortida");
         }
     }
-
-       private void guardarFitxatge(String tipus) {
+    private void guardarFitxatge(String tipus) {
         try {
             JSONObject userJson = new JSONObject(userData);
             int usuariId = userJson.getInt("id_usuari");
-    
+
             StringRequest stringRequest = new StringRequest(Request.Method.POST, Ip.FITXAR_URL,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
                             Log.d("MainActivity", "Resposta del servidor: " + response);
-                            if (response.equals("success")) {
-                                if (tipus.equals("entrada")) {
-                                    // L'hora d'inici ja s'ha mostrat, no cal tornar a establir-la
-                                } else {
-                                    verificarHoresTreballades();
-                                }
-                                Toast.makeText(MainActivity.this, "Fitxatge guardat correctament", Toast.LENGTH_SHORT).show();
+                            if (tipus.equals("entrada")) {
+                                // L'hora d'inici ja s'ha mostrat, no cal tornar a establir-la
                             } else {
-                                Toast.makeText(MainActivity.this, "Error en guardar el fitxatge", Toast.LENGTH_SHORT).show();
+                                verificarHoresTreballades();
                             }
                         }
                     },
@@ -266,7 +274,7 @@ public class MainActivity extends AppCompatActivity {
                     return params;
                 }
             };
-    
+
             RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
             requestQueue.add(stringRequest);
         } catch (Exception e) {
@@ -274,24 +282,24 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Error en obtenir les dades de l'usuari", Toast.LENGTH_SHORT).show();
         }
     }
-    
+
     private String calcularHoresTreballades() {
         String horesTreballades = "00:00:00";
         try {
             // Obtenir les hores d'inici i sortida
             String horaInici = tvHoraInici.getText().toString().replace("Hora d'inici: ", "");
             String horaSortida = tvHoraSortida.getText().toString().replace("Hora de sortida: ", "");
-    
+
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
             Date dateInici = sdf.parse(horaInici);
             Date dateSortida = sdf.parse(horaSortida);
-    
+
             long diff = dateSortida.getTime() - dateInici.getTime();
             long seconds = diff / 1000;
             long hours = seconds / 3600;
             long minutes = (seconds % 3600) / 60;
             long secs = seconds % 60;
-    
+
             horesTreballades = String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, secs);
         } catch (Exception e) {
             Log.e("MainActivity", "Error en calcular les hores treballades: " + e.getMessage());
@@ -383,40 +391,40 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
     private void verificarHoresTreballades() {
         try {
             // Obtenir les hores d'inici i sortida
             String horaInici = tvHoraInici.getText().toString().replace("Hora d'inici: ", "");
             String horaSortida = tvHoraSortida.getText().toString().replace("Hora de sortida: ", "");
-
+    
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
             Date dateInici = sdf.parse(horaInici);
             Date dateSortida = sdf.parse(horaSortida);
-
+    
             // Obtenir les hores esperades des de tvHores
-            String[] horesEsperadesArray = tvHores.getText().toString().split("\n");
+            String horesEsperadesText = tvHores.getText().toString();
+            if (horesEsperadesText.isEmpty()) {
+                Toast.makeText(this, "No hi ha hores esperades per avui", Toast.LENGTH_SHORT).show();
+                return;
+            }
+    
+            String[] horesEsperadesArray = horesEsperadesText.split("\n");
             double horesTreballades = 0;
-
+            boolean estaTreballant = false;
+    
             for (String horesEsperades : horesEsperadesArray) {
                 String[] hores = horesEsperades.split(" - ");
                 Date horaIniciEsperada = sdf.parse(hores[0] + ":00");
                 Date horaFiEsperada = sdf.parse(hores[1] + ":00");
-
-                // Calcular les hores treballades dins de l'interval esperat
+    
+                // Verificar si l'hora d'inici i l'hora de sortida estan dins dels intervals esperats
                 if (dateInici.before(horaFiEsperada) && dateSortida.after(horaIniciEsperada)) {
+                    estaTreballant = true;
                     Date horaIniciTreballada = dateInici.after(horaIniciEsperada) ? dateInici : horaIniciEsperada;
                     Date horaFiTreballada = dateSortida.before(horaFiEsperada) ? dateSortida : horaFiEsperada;
                     long diff = horaFiTreballada.getTime() - horaIniciTreballada.getTime();
                     horesTreballades += (double) diff / (1000 * 60 * 60);
                 }
-            }
-
-            // Verificar si les hores treballades coincideixen amb les hores esperades
-            if (horesTreballades > 0) {
-                Toast.makeText(this, "Hores treballades correctes: " + horesTreballades, Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "Hores treballades insuficients", Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
             Log.e("MainActivity", "Error en verificar les hores treballades: " + e.getMessage());

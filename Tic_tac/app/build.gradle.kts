@@ -45,6 +45,8 @@ dependencies {
     // Afegir dependències per a Apache POI
     implementation("org.apache.poi:poi:5.2.3")
     implementation("org.apache.poi:poi-ooxml:5.2.3")
+    implementation ("androidx.cardview:cardview:1.0.0")
+
 }
 
 // Desactivar el seguiment de l'estat de les tasques de mapatge de fonts de depuració
