@@ -218,13 +218,17 @@ public class MainActivity extends AppCompatActivity {
             btnIniciar.setEnabled(true);
             tvHoraSortida.setVisibility(View.VISIBLE);
 
-            // Mostrar l'hora de sortida immediatament
             String horaSortida = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
             tvHoraSortida.setText("Hora de sortida: " + horaSortida);
 
+            // Guarda el fitxatge de sortida i després calcula l'horari efectiu
             guardarFitxatge("sortida");
+
+            String horesTreballades = calcularHoresTreballadesAmbHorari();
+            Toast.makeText(this, "Hores treballades (segons horari): " + horesTreballades, Toast.LENGTH_LONG).show();
         }
     }
+
     private void guardarFitxatge(String tipus) {
         try {
             JSONObject userJson = new JSONObject(userData);
@@ -264,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
                             Log.d("MainActivity", "No GPS data available");
                         }
                         if (tipus.equals("sortida")) {
-                            String horesTreballades = calcularHoresTreballades();
+                            String horesTreballades = calcularHoresTreballadesAmbHorari();
                             params.put("hores_treballades", horesTreballades);
                         }
                     } catch (Exception e) {
@@ -283,29 +287,57 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private String calcularHoresTreballades() {
-        String horesTreballades = "00:00:00";
+    private String calcularHoresTreballadesAmbHorari() {
+        double horesTreballades = 0;
         try {
-            // Obtenir les hores d'inici i sortida
-            String horaInici = tvHoraInici.getText().toString().replace("Hora d'inici: ", "");
-            String horaSortida = tvHoraSortida.getText().toString().replace("Hora de sortida: ", "");
-
+            // Obtenim les hores reals d'inici i sortida (format "HH:mm:ss")
+            String horaIniciText = tvHoraInici.getText().toString().replace("Hora d'inici: ", "");
+            String horaSortidaText = tvHoraSortida.getText().toString().replace("Hora de sortida: ", "");
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
-            Date dateInici = sdf.parse(horaInici);
-            Date dateSortida = sdf.parse(horaSortida);
+            Date dataInici = sdf.parse(horaIniciText);
+            Date dataSortida = sdf.parse(horaSortidaText);
 
-            long diff = dateSortida.getTime() - dateInici.getTime();
-            long seconds = diff / 1000;
-            long hours = seconds / 3600;
-            long minutes = (seconds % 3600) / 60;
-            long secs = seconds % 60;
+            // Si no hi ha cap horari programat, no podem calcular la intersecció
+            String horesEsperadesText = tvHores.getText().toString();
+            if (horesEsperadesText.isEmpty()) {
+                Toast.makeText(this, "No hi ha hores esperades per avui", Toast.LENGTH_SHORT).show();
+                return "00:00:00";
+            }
 
-            horesTreballades = String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, secs);
+            // Cada interval esperat està en format "HH:mm - HH:mm"
+            String[] intervals = horesEsperadesText.split("\n");
+
+            for (String interval : intervals) {
+                String[] parts = interval.split(" - ");
+                // Afegim segons per poder comparar amb el format "HH:mm:ss"
+                Date intervalInici = sdf.parse(parts[0] + ":00");
+                Date intervalFi = sdf.parse(parts[1] + ":00");
+
+                // Calcular l'intersecció:
+                // L'inici de l'intersecció és el màxim entre la data d'inici real i l'inici de l'interval
+                Date iniciInterseccio = dataInici.after(intervalInici) ? dataInici : intervalInici;
+                // La fi de l'intersecció és el mínim entre la data de sortida real i la fi de l'interval
+                Date fiInterseccio = dataSortida.before(intervalFi) ? dataSortida : intervalFi;
+
+                // Si hi ha intersecció (la data d'inici de la intersecció és anterior a la fi)
+                if (iniciInterseccio.before(fiInterseccio)) {
+                    long diffMillis = fiInterseccio.getTime() - iniciInterseccio.getTime();
+                    horesTreballades += diffMillis / (1000.0 * 60 * 60); // Convertir a hores
+                }
+            }
+
+            // Si no hi ha cap intersecció (és a dir, no estaves treballant dins l'horari), horesTreballades quedarà a 0
         } catch (Exception e) {
-            Log.e("MainActivity", "Error en calcular les hores treballades: " + e.getMessage());
+            Log.e("MainActivity", "Error en calcular les hores treballades amb horari: " + e.getMessage());
             Toast.makeText(this, "Error en calcular les hores treballades", Toast.LENGTH_SHORT).show();
+            return "00:00:00";
         }
-        return horesTreballades;
+
+        // Formateja el resultat a HH:mm:ss
+        int hores = (int) horesTreballades;
+        int minuts = (int) ((horesTreballades - hores) * 60);
+        int segons = (int) ((((horesTreballades - hores) * 60) - minuts) * 60);
+        return String.format(Locale.getDefault(), "%02d:%02d:%02d", hores, minuts, segons);
     }
 
     private void mostrarHoresDelDia() {
@@ -391,7 +423,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-    private void verificarHoresTreballades() {
+        private void verificarHoresTreballades() {
         try {
             // Obtenir les hores d'inici i sortida
             String horaInici = tvHoraInici.getText().toString().replace("Hora d'inici: ", "");
@@ -425,6 +457,18 @@ public class MainActivity extends AppCompatActivity {
                     long diff = horaFiTreballada.getTime() - horaIniciTreballada.getTime();
                     horesTreballades += (double) diff / (1000 * 60 * 60);
                 }
+            }
+    
+            // Si no ha treballat dins dels intervals esperats, no sumar res
+            if (!estaTreballant) {
+                Toast.makeText(this, "No has treballat dins dels intervals esperats", Toast.LENGTH_SHORT).show();
+            } else {
+                // Mostrar les hores treballades
+                String horesTreballadesText = String.format(Locale.getDefault(), "%02d:%02d:%02d", 
+                    (int) horesTreballades, 
+                    (int) ((horesTreballades * 60) % 60), 
+                    (int) ((horesTreballades * 3600) % 60));
+                Toast.makeText(this, "Hores treballades: " + horesTreballadesText, Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
             Log.e("MainActivity", "Error en verificar les hores treballades: " + e.getMessage());
