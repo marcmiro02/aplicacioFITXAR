@@ -1,11 +1,13 @@
 package com.example.tiac_tac;
 
 public class Ip {
-    public static final String BASE_URL = "http://192.160.166.70:80/Tic_tac/";
+    public static final String BASE_URL = "http://192.160.163.71:80/Tic_tac/";
 
     public static final String LOGIN_URL = BASE_URL + "usuaris/login.php";
 
     public static final String PERFIL_URL = BASE_URL + "usuaris/perfil.php";
+
+    public static final String VERIFICAR_URL = BASE_URL + "usuaris/verificar.php";
 
     public static final String FITXAR_URL = BASE_URL + "usuaris/fitxar.php";
 

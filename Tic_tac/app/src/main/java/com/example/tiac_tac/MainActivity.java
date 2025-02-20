@@ -29,6 +29,7 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
@@ -391,18 +392,81 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
+        @Override
     protected void onResume() {
         super.onResume();
         // Obtenir les dades de l'usuari de l'intent
         Intent intent = getIntent();
         userData = intent.getStringExtra("user_data");
         horarisData = intent.getStringExtra("horaris_data");
-
+    
         // Mostrar les hores que li toquen aquell dia
         mostrarHoresDelDia();
+    
+        // Verificar l'estat del fitxatge
+        verificarEstatFitxatge();
     }
+    private void verificarEstatFitxatge() {
+        try {
+            JSONObject userJson = new JSONObject(userData);
+            int usuariId = userJson.getInt("id_usuari");
 
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, Ip.VERIFICAR_URL,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            // Imprimir la resposta de l'API al logcat
+                            Log.d("MainActivity", "Resposta de l'API: " + response);
+                            try {
+                                // Eliminar la part no JSON de la resposta
+                                String jsonResponseString = response.substring(response.indexOf("{"));
+                                JSONObject jsonResponse = new JSONObject(jsonResponseString);
+                                boolean fitxatgeObert = jsonResponse.getBoolean("fitxatge_obert");
+                                String horaInici = jsonResponse.getString("hora_inici");
+
+                                if (fitxatgeObert) {
+                                    isRunning = true;
+                                    tvHoraInici.setText("Hora d'inici: " + horaInici);
+                                    btnIniciar.setVisibility(View.GONE);
+                                    btnParar.setVisibility(View.VISIBLE);
+                                    btnParar.setEnabled(true);
+                                    tvHoraInici.setVisibility(View.VISIBLE);
+                                    tvHoraSortida.setVisibility(View.GONE);
+                                } else {
+                                    isRunning = false;
+                                    btnIniciar.setVisibility(View.VISIBLE);
+                                    btnParar.setVisibility(View.GONE);
+                                    btnIniciar.setEnabled(true);
+                                    tvHoraSortida.setVisibility(View.VISIBLE);
+                                }
+                            } catch (JSONException e) {
+                                Log.e("MainActivity", "Error en processar la resposta de l'API: " + e.getMessage());
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.e("MainActivity", "Error en la connexió: " + error.getMessage());
+                            Toast.makeText(MainActivity.this, "Error en la connexió", Toast.LENGTH_SHORT).show();
+                        }
+                    }) {
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<>();
+                    params.put("usuari_id", String.valueOf(usuariId));
+                    return params;
+                }
+            };
+
+            RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
+            requestQueue.add(stringRequest);
+        } catch (JSONException e) {
+            Log.e("MainActivity", "Error en obtenir les dades de l'usuari: " + e.getMessage());
+            Toast.makeText(this, "Error en obtenir les dades de l'usuari", Toast.LENGTH_SHORT).show();
+        }
+    }
+    
     @Override
     protected void onDestroy() {
         super.onDestroy();
