@@ -27,6 +27,7 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -251,22 +252,31 @@ public class Incidencia extends AppCompatActivity {
         try {
             JSONObject userJson = new JSONObject(userData);
             int usuariId = userJson.getInt("id_usuari");
-
+    
             StringRequest stringRequest = new StringRequest(Request.Method.POST, Ip.INCIDENCIA_AFEGIR_URL,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
                             Log.d("Incidencia", "Resposta del servidor: " + response);
-                            if (response.equals("success")) {
-                                Toast.makeText(Incidencia.this, "Incidència afegida correctament", Toast.LENGTH_SHORT).show();
-                                // Reiniciar l'activitat per actualitzar la llista d'incidències
-                                Intent intent = new Intent(Incidencia.this, Incidencia.class);
-                                intent.putExtra("user_data", userData);
-                                intent.putExtra("horaris_data", horarisData);
-                                startActivity(intent);
-                                finish();
-                            } else {
-                                Toast.makeText(Incidencia.this, "Error en afegir la incidència", Toast.LENGTH_SHORT).show();
+                            try {
+                                // Eliminar la part no JSON de la resposta
+                                String jsonResponseString = response.substring(response.indexOf("{"));
+                                JSONObject jsonResponse = new JSONObject(jsonResponseString);
+                                String status = jsonResponse.getString("status");
+                                if (status.equals("success")) {
+                                    // Reiniciar l'activitat per actualitzar la llista d'incidències
+                                    Intent intent = new Intent(Incidencia.this, Incidencia.class);
+                                    intent.putExtra("user_data", userData);
+                                    intent.putExtra("horaris_data", horarisData);
+                                    startActivity(intent);
+                                    finish();
+                                } else {
+                                    String message = jsonResponse.getString("message");
+                                    Toast.makeText(Incidencia.this, "Error en afegir la incidència: " + message, Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (JSONException e) {
+                                Log.e("Incidencia", "Error en processar la resposta del servidor: " + e.getMessage());
+                                Toast.makeText(Incidencia.this, "Error en processar la resposta del servidor", Toast.LENGTH_SHORT).show();
                             }
                         }
                     },
@@ -287,7 +297,7 @@ public class Incidencia extends AppCompatActivity {
                     return params;
                 }
             };
-
+    
             RequestQueue requestQueue = Volley.newRequestQueue(this);
             requestQueue.add(stringRequest);
         } catch (Exception e) {
